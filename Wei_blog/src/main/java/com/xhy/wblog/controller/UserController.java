@@ -5,8 +5,8 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.code.kaptcha.util.Config;
 import com.xhy.wblog.controller.result.Code;
 import com.xhy.wblog.controller.result.PublicResult;
-import com.xhy.wblog.controller.vo.RegisterVo;
-import com.xhy.wblog.controller.vo.LoginVo;
+import com.xhy.wblog.controller.vo.users.RegisterVo;
+import com.xhy.wblog.controller.vo.users.LoginVo;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.UserService;
 import com.xhy.wblog.utils.exception.ExceptUtil;
@@ -85,8 +85,11 @@ public class UserController {
                     // 保存用户id及其access_token到session中
                     HttpSession session = request.getSession();
                     String access_token = UUID.randomUUID().toString(); // 保证不一样就行
+                    // 这是到时候拿来关联其他用的
                     session.setAttribute("access_token", access_token);
                     session.setAttribute("user_id", user.getId());
+                    // 这是本页面用的user界面用的 不需要登录
+                    session.setAttribute("user", user);
 
                     // 将查询信息响应给前台
                     Map<String, Object> resultMap = new HashMap<>();
@@ -119,8 +122,32 @@ public class UserController {
         } catch (Exception e) {
             return new PublicResult(false, Code.CAPTCHA_ERROR, ExceptUtil.getSimpleException(e),"注册失败");
         }
-
     }
 
+    @RequestMapping("/update")
+    public PublicResult update(@RequestBody User bean, HttpSession session) {
+        try {
+            User user = (User) session.getAttribute("user");
+
+            if (user != null) { // 说明登录过了的
+                // 将该用户的邮箱和id 还有原密码 放入传过来的 bean
+                bean.setId(user.getId());
+                bean.setEmail(user.getEmail());
+                bean.setPassword(user.getPassword());
+
+                // 将整合好的参数更新到数据库
+                service.update(bean);
+
+                return new PublicResult(true, Code.UPDATE_OK, null, "修改成功");
+
+            } else {
+                return new PublicResult(false, Code.UPDATE_ERROR, null, "请登录");
+            }
+
+        } catch (Exception e) {
+            return new PublicResult(false, Code.UPDATE_ERROR, ExceptUtil.getSimpleException(e),"保存失败");
+        }
+
+    }
 
 }

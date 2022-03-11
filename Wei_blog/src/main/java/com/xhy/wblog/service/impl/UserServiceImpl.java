@@ -3,8 +3,8 @@ package com.xhy.wblog.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xhy.wblog.controller.result.Code;
 import com.xhy.wblog.controller.result.PublicResult;
-import com.xhy.wblog.controller.vo.RegisterVo;
-import com.xhy.wblog.controller.vo.LoginVo;
+import com.xhy.wblog.controller.vo.users.RegisterVo;
+import com.xhy.wblog.controller.vo.users.LoginVo;
 import com.xhy.wblog.dao.UserDao;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.UserService;
@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("email", bean.getEmail());
         User user = dao.selectOne(queryWrapper);
-
         // 返回的map集合
         Map<String, Object> map = new HashMap<>();
         if (user != null) { // 代表改有改用户
@@ -60,7 +59,7 @@ public class UserServiceImpl implements UserService {
         try {
             if(user!=null){//如果不为空，证明已经被注册
                 return new PublicResult(false, Code.REGISTER_ERROR,null,"该邮件已经被注册!");
-            }else{//不然就创建user类，插入数据库
+            } else {//不然就创建user类，插入数据库
                 user = new User();
                 user.setEmail(registerVo.getEmail());
                 String key = Md5.md5(registerVo.getPassword(), Md5.md5key);
@@ -75,4 +74,12 @@ public class UserServiceImpl implements UserService {
             return new PublicResult(false,Code.REGISTER_ERROR, null,"出现了未知错误!");
         }
     }
+
+    // 修改个人信息
+    @Override
+    public boolean update(User bean) {
+        // 更新一下信息就行了
+        return dao.updateById(bean) > 0;
+    }
+
 }
