@@ -71,7 +71,7 @@ public class UserController {
     }
 
     @RequestMapping("/login")
-    public PublicResult login(@RequestBody LoginVo bean, HttpServletRequest request) throws Exception {
+    public PublicResult login(@RequestBody LoginVo bean, HttpServletRequest request) {
 
         try {
             Map<String, Object> map = service.login(bean);
@@ -124,6 +124,7 @@ public class UserController {
         }
     }
 
+    // 修改个人信息
     @RequestMapping("/update")
     public PublicResult update(@RequestBody User bean, HttpSession session) {
         try {
