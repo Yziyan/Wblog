@@ -23,4 +23,6 @@ public interface UserService {
     // 修改个人信息
     @Transactional(readOnly = false)
     boolean update(User bean);
+
+
 }

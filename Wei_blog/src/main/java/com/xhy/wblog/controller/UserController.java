@@ -7,16 +7,22 @@ import com.xhy.wblog.controller.result.Code;
 import com.xhy.wblog.controller.result.PublicResult;
 import com.xhy.wblog.controller.vo.users.RegisterVo;
 import com.xhy.wblog.controller.vo.users.LoginVo;
+import com.xhy.wblog.entity.Constant;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.UserService;
 import com.xhy.wblog.utils.exception.ExceptUtil;
+import com.xhy.wblog.utils.upload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.imageio.ImageIO;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.InputStream;
 
 import java.util.*;
@@ -150,5 +156,35 @@ public class UserController {
         }
 
     }
+
+    // 修改个人信息
+    @RequestMapping("/fileUpload")
+    public PublicResult update(@RequestParam("file")MultipartFile file, HttpServletRequest request) {
+
+        try {
+            // 获取登录的user
+            User user = (User) request.getSession().getAttribute("user");
+
+            if (user != null) { // 登录过了 ，可以操作
+                Map<String, String> map = FileUpload.uploadImage(file, request, user.getPhoto());
+
+                // 将图片信息保存到数据库
+                user.setPhoto(map.get("imagePath"));
+                service.update(user);
+
+                // 将文件名和文件路径返回，进行响应
+                return new PublicResult(true, Code.UPLOAD_OK, map, "图片上传成功");
+
+            } else {
+                return new PublicResult(false, Code.UPLOAD_ERROR, null, "请登录");
+            }
+
+
+        } catch (Exception e) {
+            return new PublicResult(true, Code.UPLOAD_ERROR, ExceptUtil.getSimpleException(e), "图片上传失败");
+        }
+
+    }
+
 
 }
