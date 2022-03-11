@@ -35,6 +35,8 @@ public class UserServiceImpl implements UserService {
             // 验证密码
             boolean verify = Md5.verify(bean.getPassword(), Md5.md5key, user.getPassword());
             if (verify) { // 代表是真
+                // 将密码设置为空
+                user.setPassword(null);
                 map.put("msg", "登陆成功");
                 map.put("user", user);
                 map.put("flag", true);

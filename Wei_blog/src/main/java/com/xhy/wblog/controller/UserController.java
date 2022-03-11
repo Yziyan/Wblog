@@ -113,7 +113,7 @@ public class UserController {
             String code = (String) request.getSession().getAttribute("code");
             if(registerVo.getCaptcha().equals(code)){
                 return service.register(registerVo);
-            }else {
+            } else {
                 return new PublicResult(false,Code.CAPTCHA_ERROR,null,"验证码错误!");
             }
         } catch (Exception e) {
