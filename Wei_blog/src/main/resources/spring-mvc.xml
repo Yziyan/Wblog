@@ -9,11 +9,19 @@
 
     <!-- 加载 子容器（controller） -->
     <context:component-scan base-package="com.xhy.wblog.controller"/>
-    <!-- 解决乱码问题 -->
+    <!-- 解决响应乱码问题 -->
     <mvc:annotation-driven>
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.StringHttpMessageConverter">
                 <property name="defaultCharset" value="UTF-8"/>
+                <property name="supportedMediaTypes">
+                    <list>
+                        <!-- 响应html解析器 -->
+                        <value>text/html;charset=utf-8</value>
+                        <!-- Json（Jackson）序列化输出 -->
+                        <value>application/json;charset=utf-8</value>
+                    </list>
+                </property>
             </bean>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                 <property name="defaultCharset" value="UTF-8"/>

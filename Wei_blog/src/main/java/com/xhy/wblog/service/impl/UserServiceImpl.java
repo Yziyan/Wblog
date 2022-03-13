@@ -11,6 +11,7 @@ import com.xhy.wblog.service.UserService;
 import com.xhy.wblog.utils.md5.Md5;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,33 +54,43 @@ public class UserServiceImpl implements UserService {
 
     //注册用--用email查找user
     @Override
-    public PublicResult register(RegisterVo registerVo) {
-        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("email",registerVo.getEmail());
+    public Map<String, Object> register(RegisterVo registerVo) throws Exception {
+
+        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("email", registerVo.getEmail());
         User user = dao.selectOne(wrapper);
-        try {
-            if(user!=null){//如果不为空，证明已经被注册
-                return new PublicResult(false, Code.REGISTER_ERROR,null,"该邮件已经被注册!");
-            } else {//不然就创建user类，插入数据库
-                user = new User();
-                user.setEmail(registerVo.getEmail());
-                String key = Md5.md5(registerVo.getPassword(), Md5.md5key);
-                user.setPassword(key);
-                user.setGender(registerVo.getGender());
-                dao.insert(user);
-                return new PublicResult(true,Code.REGISTER_OK,null,"注册成功!");
-            }
-        } catch (Exception e) {
-            // 来到这说明失败了
-            e.printStackTrace();
-            return new PublicResult(false,Code.REGISTER_ERROR, null,"出现了未知错误!");
+        Map<String, Object> map = new HashMap<>();
+        if (user != null) {//如果不为空，证明已经被注册
+            map.put("msg", "该邮件已经被注册!");
+            map.put("flag", false);
+        } else {//不然就创建user类，插入数据库
+            user = new User();
+            user.setEmail(registerVo.getEmail());
+            String key = Md5.md5(registerVo.getPassword(), Md5.md5key);
+            user.setPassword(key);
+            user.setGender(registerVo.getGender());
+            // 将
+            dao.insert(user);
+            // 插入之后返回的id拼接到传过来的uri，保存到user的网址上
+            user.setProfileUrl(registerVo.getProfileUrl() + user.getId());
+            dao.updateById(user);
+            map.put("msg", "注册成功!");
+            map.put("flag", true);
         }
+        return map;
     }
 
-    // 修改个人信息
+    // 修改图片信息
     @Override
-    public boolean update(User bean) {
+    public User update(User bean) {
         // 更新一下信息就行了
-        return dao.updateById(bean) > 0;
+        User user = new User();
+        if (dao.updateById(bean) > 0) {
+            user = dao.selectById(bean.getId());
+        } else {
+            user = null;
+        }
+
+        return user;
     }
 
 }

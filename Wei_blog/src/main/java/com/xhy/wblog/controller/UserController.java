@@ -7,30 +7,29 @@ import com.xhy.wblog.controller.result.Code;
 import com.xhy.wblog.controller.result.PublicResult;
 import com.xhy.wblog.controller.vo.users.RegisterVo;
 import com.xhy.wblog.controller.vo.users.LoginVo;
-import com.xhy.wblog.entity.Constant;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.UserService;
 import com.xhy.wblog.utils.exception.ExceptUtil;
+import com.xhy.wblog.utils.md5.Md5;
 import com.xhy.wblog.utils.upload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.InputStream;
 
 import java.util.*;
 
 /**
- *  使用Restful的风格进行数据交互。
- *  @RestController 这个包含了Json字符串转换
- *  @RequestMapping("/users")   路径：在ctx下拼接 /users
+ * 使用Restful的风格进行数据交互。
+ *
+ * @RestController 这个包含了Json字符串转换
+ * @RequestMapping("/users") 路径：在ctx下拼接 /users
  */
 
 @RestController
@@ -82,8 +81,8 @@ public class UserController {
         try {
             Map<String, Object> map = service.login(bean);
             String code = (String) request.getSession().getAttribute("code");
-
-            if (!bean.getCaptcha().equals(code)) { // 验证码，错误
+            String captcha = bean.getCaptcha().toLowerCase();
+            if (!captcha.equals(code)) { // 验证码，错误
                 return new PublicResult(false, Code.LOGIN_ERROR, null, "验证码错误");
             } else { // 验证码正确
                 if ((boolean) map.get("flag")) {
@@ -116,17 +115,27 @@ public class UserController {
     }
 
     @RequestMapping("register")
-    public PublicResult register(@RequestBody RegisterVo registerVo,HttpServletRequest request){
-
+    public PublicResult register(@RequestBody RegisterVo registerVo, HttpServletRequest request) {
         try {
+            String captcha = registerVo.getCaptcha().toLowerCase();
             String code = (String) request.getSession().getAttribute("code");
-            if(registerVo.getCaptcha().equals(code)){
-                return service.register(registerVo);
-            } else {
-                return new PublicResult(false,Code.CAPTCHA_ERROR,null,"验证码错误!");
+            if (!captcha.equals(code)) { // 验证码，错误
+                return new PublicResult(false, Code.REGISTER_ERROR, null, "验证码错误");
+            } else { // 验证码正确
+                String url = String.valueOf(request.getRequestURL());
+                // http://localhost:8080/wblog/users   将这个传入service
+                String userUrl = url.substring(0, url.lastIndexOf("/") - 1);
+                registerVo.setProfileUrl(userUrl);
+                Map<String, Object> map = service.register(registerVo);
+
+                if ((boolean) map.get("flag")) {
+                    return new PublicResult(true, Code.REGISTER_OK, null, (String) map.get("msg"));
+                }
+                return new PublicResult(true, Code.REGISTER_OK, null, (String) map.get("msg"));
             }
         } catch (Exception e) {
-            return new PublicResult(false, Code.CAPTCHA_ERROR, ExceptUtil.getSimpleException(e),"注册失败");
+            // 来到这说明失败了
+            return new PublicResult(false, Code.REGISTER_ERROR, ExceptUtil.getSimpleException(e), "出现了未知错误!");
         }
     }
 
@@ -142,35 +151,35 @@ public class UserController {
                 bean.setEmail(user.getEmail());
                 bean.setPassword(user.getPassword());
 
-                // 将整合好的参数更新到数据库
-                service.update(bean);
-
-                return new PublicResult(true, Code.UPDATE_OK, null, "修改成功");
+                // 将整合好的参数更新到数据库,并且将用户最新的信息返回
+                User resUser = service.update(bean);
+                return new PublicResult(true, Code.UPDATE_OK, resUser, "修改成功");
 
             } else {
                 return new PublicResult(false, Code.UPDATE_ERROR, null, "请登录");
             }
 
         } catch (Exception e) {
-            return new PublicResult(false, Code.UPDATE_ERROR, ExceptUtil.getSimpleException(e),"保存失败");
+            return new PublicResult(false, Code.UPDATE_ERROR, ExceptUtil.getSimpleException(e), "保存失败");
         }
 
     }
 
-    // 修改个人信息
+    // 修改头像
     @RequestMapping("/fileUpload")
-    public PublicResult update(@RequestParam("file")MultipartFile file, HttpServletRequest request) {
+    public PublicResult update(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
 
         try {
             // 获取登录的user
             User user = (User) request.getSession().getAttribute("user");
 
             if (user != null) { // 登录过了 ，可以操作
-                Map<String, String> map = FileUpload.uploadImage(file, request, user.getPhoto());
+                Map<String, Object> map = FileUpload.uploadImage(file, request, user.getPhoto());
 
                 // 将图片信息保存到数据库
-                user.setPhoto(map.get("imagePath"));
-                service.update(user);
+                user.setPhoto((String) map.get("imagePath"));
+                User resUser = service.update(user);
+                map.put("user", resUser);
 
                 // 将文件名和文件路径返回，进行响应
                 return new PublicResult(true, Code.UPLOAD_OK, map, "图片上传成功");

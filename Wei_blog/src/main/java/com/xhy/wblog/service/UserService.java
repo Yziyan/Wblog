@@ -15,14 +15,14 @@ public interface UserService {
 
     //用email来查找 ，@Transactional(readOnly = false)：保存东西最好写上
     @Transactional(readOnly = false)
-    PublicResult register(RegisterVo registerVo);
+    Map<String, Object> register(RegisterVo registerVo) throws Exception;
 
     // 用户登录
     Map<String, Object> login(LoginVo bean) throws Exception;
 
     // 修改个人信息
     @Transactional(readOnly = false)
-    boolean update(User bean);
+    User update(User bean);
 
 
 }

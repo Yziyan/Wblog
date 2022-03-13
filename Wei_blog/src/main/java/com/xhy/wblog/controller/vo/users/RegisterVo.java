@@ -21,6 +21,7 @@ public class RegisterVo {
     private String captcha;
     // 验证码
     private Integer gender;
-
+    // 用户的网址
+    private String profileUrl;
 
 }
