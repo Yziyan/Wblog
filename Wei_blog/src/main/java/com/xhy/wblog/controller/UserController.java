@@ -10,7 +10,6 @@ import com.xhy.wblog.controller.vo.users.LoginVo;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.UserService;
 import com.xhy.wblog.utils.exception.ExceptUtil;
-import com.xhy.wblog.utils.md5.Md5;
 import com.xhy.wblog.utils.upload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +31,8 @@ import java.util.*;
  * @RequestMapping("/users") 路径：在ctx下拼接 /users
  */
 
+
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/users")
 public class UserController {
