@@ -18,7 +18,7 @@ public class PublicResult {
     // 操作结果编码
     private Integer code;
     // 操作数据结果
-    private Object date;
+    private Object data;
     // 返回消息
     private String message;
 
