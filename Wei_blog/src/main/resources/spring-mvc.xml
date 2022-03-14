@@ -62,7 +62,7 @@
 
     <mvc:cors>
         <mvc:mapping path="/**"
-                     allowed-origins="http://localhost:63343,http://172.20.10.4:8080"
+                     allowed-origins="http://172.20.10.4:8080,http://localhost:63343"
                      allowed-methods="GET,POST"
                      allow-credentials="true"
                      allowed-headers="*"   />
