@@ -12,6 +12,7 @@ import com.xhy.wblog.service.UserService;
 import com.xhy.wblog.utils.exception.ExceptUtil;
 import com.xhy.wblog.utils.upload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
-
 import java.util.*;
 
 /**
@@ -31,9 +31,8 @@ import java.util.*;
  * @RequestMapping("/users") 路径：在ctx下拼接 /users
  */
 
-
-@CrossOrigin(origins = "*")
 @RestController
+@Configuration
 @RequestMapping("/users")
 public class UserController {
 

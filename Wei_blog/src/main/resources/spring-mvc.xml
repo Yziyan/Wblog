@@ -58,4 +58,15 @@
         <property name="maxInMemorySize" value="40960"/>
     </bean>
 
+
+
+    <mvc:cors>
+        <mvc:mapping path="/**"
+                     allowed-origins="http://localhost:63343,http://172.20.10.4:8080"
+                     allowed-methods="GET,POST"
+                     allow-credentials="true"
+                     allowed-headers="*"   />
+        <!-- 晨曦的项目ip:http://172.20.10.4:8080 -->
+        <!-- idea启动带的ip :http://localhost:63343-->
+    </mvc:cors>
 </beans>
