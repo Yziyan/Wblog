@@ -1,0 +1,74 @@
+package com.xhy.wblog.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import java.util.Date;
+import java.io.Serializable;
+
+/**
+ * 这是一张动态表(TDynamic)实体类
+ *
+ * @author
+ * @since 2022-03-14 21:29:06
+ */
+
+@TableName("t_dynamic")   // 说明实体表名
+@Data   // 生成get和set
+@AllArgsConstructor    // 生成全参构造
+@NoArgsConstructor     // 生成空构造方法
+@ToString              // 生成toString方法
+public class Dynamic implements Serializable {
+    private static final long serialVersionUID = 757689377670508929L;
+    /**
+     * 唯一标识
+     */
+    @TableId(type = IdType.AUTO)    //主键自增
+    @TableField("id")
+    private Integer id;
+    /**
+     * 创建时间
+     */
+    private Date createdTime;
+    /**
+     * 文本内容
+     */
+    private String text;
+    /**
+     * 文件内容
+     */
+    private String file;
+    /**
+     * 默认是0
+            0 ： 公开
+            10：粉丝
+            20：仅自己
+     */
+    private Integer visible;
+    /**
+     * 点赞数量，默认是0
+     */
+    private Integer hits;
+    /**
+     * 评论的数量，默认是0
+     */
+    private Integer commentsCount;
+    
+    private Integer uerId;
+    /**
+     * 默认是0：
+            不是转发的：0
+            是转发的 ： 转发的动态的 id
+     */
+    private Integer frowardDynamicId;
+
+
+
+}
+
