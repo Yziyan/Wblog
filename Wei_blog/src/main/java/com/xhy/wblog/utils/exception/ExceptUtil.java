@@ -10,7 +10,6 @@ public class ExceptUtil {
             cause = cause.getCause();
         }
 
-
         return cause.getClass().getSimpleName() + ": " + cause.getMessage();
 
     }

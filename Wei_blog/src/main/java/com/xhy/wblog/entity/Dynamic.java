@@ -25,7 +25,6 @@ import java.io.Serializable;
 @NoArgsConstructor     // 生成空构造方法
 @ToString              // 生成toString方法
 public class Dynamic implements Serializable {
-    private static final long serialVersionUID = 757689377670508929L;
     /**
      * 唯一标识
      */
@@ -66,7 +65,7 @@ public class Dynamic implements Serializable {
             不是转发的：0
             是转发的 ： 转发的动态的 id
      */
-    private Integer frowardDynamicId;
+    private Integer forwardDynamicId;
 
 
 

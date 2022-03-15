@@ -11,6 +11,7 @@ import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.UserService;
 import com.xhy.wblog.utils.exception.ExceptUtil;
 import com.xhy.wblog.utils.upload.FileUpload;
+import com.xhy.wblog.utils.upload.UploadResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,6 @@ import java.util.*;
  */
 
 @RestController
-@Configuration
 @RequestMapping("/users")
 public class UserController {
 
@@ -167,17 +167,21 @@ public class UserController {
 
     // 修改头像
     @RequestMapping("/fileUpload")
-    public PublicResult update(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+    public PublicResult update(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request) {
 
         try {
             // 获取登录的user
             User user = (User) request.getSession().getAttribute("user");
 
             if (user != null) { // 登录过了 ，可以操作
-                Map<String, Object> map = FileUpload.uploadImage(file, request, user.getPhoto());
-
+                // 将信息
+                Map<String, Object> map = new HashMap<>();
+                UploadResult result = FileUpload.uploadImage(file, request, user.getPhoto());
+                map.put("fileName", result.getFileName());
+                map.put("filePath", result.getFilePath());
+                map.put("imagePath", result.getImagePath());
                 // 将图片信息保存到数据库
-                user.setPhoto((String) map.get("imagePath"));
+                user.setPhoto(result.getImagePath());
                 User resUser = service.update(user);
                 map.put("user", resUser);
 
