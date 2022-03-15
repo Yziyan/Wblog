@@ -22,6 +22,7 @@ public class Code {
     public static final Integer UPDATE_ERROR = 40020;
     public static final Integer DELETE_ERROR = 40030;
     public static final Integer QUERY_ERROR = 40040;
+    public static final Integer QUERY_OVER = 400100;
     public static final Integer LOGIN_ERROR = 40050;
     public static final Integer REGISTER_ERROR = 40060;
     public static final Integer CAPTCHA_ERROR= 40070; // 验证码

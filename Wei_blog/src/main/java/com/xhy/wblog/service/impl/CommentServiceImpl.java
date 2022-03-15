@@ -27,6 +27,9 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private UserDao userDao;
 
+    public Comment getCommentById(Integer dynamicId){
+        return commentDao.selectById(dynamicId);
+    }
     // 保存评论、
     @Override
     public Map<String, Object> save(PushCommentVo bean) {

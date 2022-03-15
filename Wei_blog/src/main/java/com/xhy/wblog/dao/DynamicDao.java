@@ -1,7 +1,11 @@
 package com.xhy.wblog.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhy.wblog.entity.Dynamic;
+
+import java.util.List;
 
 // BaseMapper<User> 继承Mybatis-plus 的类 ，泛型：表的实体对象
 public interface DynamicDao extends BaseMapper<Dynamic> {

@@ -1,5 +1,7 @@
 package com.xhy.wblog.service.impl;
 
+
+import com.github.pagehelper.PageHelper;
 import com.xhy.wblog.controller.vo.dynamic.PublishVo;
 import com.xhy.wblog.dao.DynamicDao;
 import com.xhy.wblog.dao.UserDao;
@@ -8,6 +10,9 @@ import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.DynamicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+
+import java.util.List;
 
 
 @Service
@@ -67,5 +72,29 @@ public class DynamicServiceImpl implements DynamicService {
         return dynamicDao.selectById(id);
     }
 
+    @Override
+    public boolean removeById(Integer id) {
+       return dynamicDao.deleteById(id)>0;
+    }
 
+//    @Override
+//    public Page<Dynamic> getNewDynamic(int countnum, int nums) {
+//        QueryWrapper<Dynamic> DynamicQueryWrapper = new QueryWrapper<>();
+//        Page<Dynamic> dynamicPage = new Page<>(countnum, nums);
+//        return dynamicDao.selectPage(dynamicPage,DynamicQueryWrapper);
+//    }
+
+
+
+    //分页查询
+    @Override
+    public List<Dynamic> findAllPage(int count,int num){
+        PageHelper.startPage(count,num);
+        return dynamicDao.selectList(null);
+    }
+
+    @Override
+    public long getCount(){
+        return dynamicDao.selectCount(null);
+    }
 }

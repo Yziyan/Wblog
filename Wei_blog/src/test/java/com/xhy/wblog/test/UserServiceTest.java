@@ -1,7 +1,9 @@
 package com.xhy.wblog.test;
 
 
+import com.xhy.wblog.service.DynamicService;
 import com.xhy.wblog.service.UserService;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,6 +19,14 @@ public class UserServiceTest {
     @Autowired
     private UserService service;
 
+
+    @Autowired
+    private DynamicService dynamicService;
+
+    @Test
+    public void test(){
+        System.out.println(dynamicService.getCount());
+    }
 
 
 }

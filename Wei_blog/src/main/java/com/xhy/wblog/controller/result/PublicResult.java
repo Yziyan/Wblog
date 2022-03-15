@@ -22,5 +22,8 @@ public class PublicResult {
     // 返回消息
     private String message;
 
+    //使用token进行验证
+    //private String token;
+
 
 }

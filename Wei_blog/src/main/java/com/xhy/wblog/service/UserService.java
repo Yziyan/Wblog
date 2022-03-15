@@ -1,5 +1,6 @@
 package com.xhy.wblog.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhy.wblog.controller.result.PublicResult;
 import com.xhy.wblog.controller.vo.users.RegisterVo;
 import com.xhy.wblog.controller.vo.users.LoginVo;
@@ -24,5 +25,5 @@ public interface UserService {
     @Transactional(readOnly = false)
     User update(User bean);
 
-
+    User selectById(int id);
 }

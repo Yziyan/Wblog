@@ -1,17 +1,24 @@
 package com.xhy.wblog.controller;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.xhy.wblog.controller.result.Code;
 import com.xhy.wblog.controller.result.PublicResult;
+import com.xhy.wblog.controller.vo.dynamic.DynamicNew;
 import com.xhy.wblog.controller.vo.dynamic.PublishVo;
+import com.xhy.wblog.controller.vo.dynamic.RemoveVo;
 import com.xhy.wblog.entity.Dynamic;
 import com.xhy.wblog.entity.User;
+import com.xhy.wblog.service.CommentService;
 import com.xhy.wblog.service.DynamicService;
+import com.xhy.wblog.service.UserService;
 import com.xhy.wblog.utils.exception.ExceptUtil;
 import com.xhy.wblog.utils.upload.FileUpload;
 import com.xhy.wblog.utils.upload.UploadResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -32,6 +40,12 @@ public class DynamicController {
     // 自动注入service
     @Autowired
     private DynamicService dynamicService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private CommentService commentService;
 
 
     // 发布动态,带文件的
@@ -99,5 +113,41 @@ public class DynamicController {
 
     }
 
+
+    @RequestMapping("/remove")
+    public PublicResult remove(@RequestBody RemoveVo removeVo){
+        try{
+        if(dynamicService.removeById(removeVo.getId())) {
+            return new PublicResult(true, Code.DELETE_OK, null, "删除成功");
+        }else {
+            return new PublicResult(false,Code.DELETE_ERROR,null,"删除失败！");
+        }
+        }catch (Exception e){
+            return new PublicResult(false,Code.DELETE_ERROR,ExceptUtil.getSimpleException(e),"出现了未知错误");
+        }
+    }
+
+    @RequestMapping("/getOldDynamic")
+    public PublicResult getOldDynamic(@RequestBody DynamicNew dynamicNew){
+        try {
+            //获得动态
+            List<Dynamic> newDynamic = dynamicService.findAllPage(dynamicNew.getCount(),dynamicNew.getNums());
+            if(newDynamic!=null){//动态不为空，去取得user
+                for (Dynamic dynamic:newDynamic) {
+                    User user = userService.selectById(dynamic.getUerId());
+                    dynamic.setUser(user);
+                }
+                long count = dynamicService.getCount();
+                if(count<(dynamicNew.getNums()*(dynamicNew.getCount()-1)))//如果请求的（页数-1）*数量大于总数,返回没有动态
+                {
+                    return new PublicResult(true,Code.QUERY_OVER,null,"没有动态了喔~请休息一下吧~");
+                }
+                return new PublicResult(true,Code.QUERY_OK,newDynamic,"获取成功!");
+            }
+            return  new PublicResult(false,Code.QUERY_ERROR,null,"获取失败！");
+        }catch (Exception e){
+            return  new PublicResult(false,Code.QUERY_ERROR,ExceptUtil.getSimpleException(e),"获取失败！");
+        }
+    }
 
 }

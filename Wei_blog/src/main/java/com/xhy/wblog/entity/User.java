@@ -11,6 +11,7 @@ import lombok.ToString;
 
 import java.util.Date;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 用户信息表(TUser)实体类

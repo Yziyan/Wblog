@@ -1,6 +1,7 @@
 package com.xhy.wblog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhy.wblog.controller.result.Code;
 import com.xhy.wblog.controller.result.PublicResult;
 import com.xhy.wblog.controller.vo.users.RegisterVo;
@@ -93,4 +94,8 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Override
+    public User selectById(int id){
+        return userDao.selectById(id);
+    }
 }
