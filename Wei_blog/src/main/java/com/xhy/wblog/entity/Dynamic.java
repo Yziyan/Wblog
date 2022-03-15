@@ -58,8 +58,6 @@ public class Dynamic implements Serializable {
      * 评论的数量，默认是0
      */
     private Integer commentsCount;
-    
-    private Integer uerId;
     /**
      * 默认是0：
             不是转发的：0
@@ -67,7 +65,17 @@ public class Dynamic implements Serializable {
      */
     private Integer forwardDynamicId;
 
+    /**
+     * 发布动态用户的id
+     */
+    private Integer uerId;
 
+    /**
+     *  发布动态的用户
+     */
+    // 表示此属性不映射到数据库
+    @TableField(exist = false)
+    private User user;
 
 }
 

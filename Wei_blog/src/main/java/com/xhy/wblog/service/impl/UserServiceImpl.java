@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User update(User bean) {
         // 更新一下信息就行了
-        User user = new User();
+        User user;
         if (dao.updateById(bean) > 0) {
             user = dao.selectById(bean.getId());
         } else {
