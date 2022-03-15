@@ -44,7 +44,7 @@ public class UserController {
 
     // 自动注入service
     @Autowired
-    private UserService service;
+    private UserService userService;
 
 
     // 验证码
@@ -79,7 +79,7 @@ public class UserController {
     public PublicResult login(@RequestBody LoginVo bean, HttpServletRequest request) {
 
         try {
-            Map<String, Object> map = service.login(bean);
+            Map<String, Object> map = userService.login(bean);
             String code = (String) request.getSession().getAttribute("code");
             String captcha = bean.getCaptcha().toLowerCase();
             if (!captcha.equals(code)) { // 验证码，错误
@@ -126,7 +126,7 @@ public class UserController {
                 // http://localhost:8080/wblog/users   将这个传入service
                 String userUrl = url.substring(0, url.lastIndexOf("/") - 1);
                 registerVo.setProfileUrl(userUrl);
-                Map<String, Object> map = service.register(registerVo);
+                Map<String, Object> map = userService.register(registerVo);
 
                 if ((boolean) map.get("flag")) {
                     return new PublicResult(true, Code.REGISTER_OK, null, (String) map.get("msg"));
@@ -152,7 +152,7 @@ public class UserController {
                 bean.setPassword(user.getPassword());
 
                 // 将整合好的参数更新到数据库,并且将用户最新的信息返回
-                User resUser = service.update(bean);
+                User resUser = userService.update(bean);
                 return new PublicResult(true, Code.UPDATE_OK, resUser, "修改成功");
 
             } else {
@@ -182,7 +182,7 @@ public class UserController {
                 map.put("imagePath", result.getImagePath());
                 // 将图片信息保存到数据库
                 user.setPhoto(result.getImagePath());
-                User resUser = service.update(user);
+                User resUser = userService.update(user);
                 map.put("user", resUser);
 
                 // 将文件名和文件路径返回，进行响应

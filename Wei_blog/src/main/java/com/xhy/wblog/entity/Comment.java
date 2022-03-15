@@ -13,69 +13,60 @@ import java.util.Date;
 import java.io.Serializable;
 
 /**
- * 这是一张动态表(TDynamic)实体类
+ * 这是用来装所有评论的表(Comment)实体类
  *
  * @author
- * @since 2022-03-14 21:29:06
+ * @since 2022-03-15 13:35:48
  */
-
-@TableName("t_dynamic")   // 说明实体表名
+@TableName("t_comment")   // 说明实体表名
 @Data   // 生成get和set
 @AllArgsConstructor    // 生成全参构造
 @NoArgsConstructor     // 生成空构造方法
 @ToString              // 生成toString方法
-public class Dynamic implements Serializable {
-    /**
-     * 唯一标识
-     */
+public class Comment implements Serializable {
+
     @TableId(type = IdType.AUTO)    //主键自增
     @TableField("id")
     private Integer id;
-    /**
-     * 创建时间
-     */
+    
     private Date createdTime;
     /**
-     * 文本内容
-     */
-    private String text;
-    /**
-     * 文件内容
-     */
-    private String file;
-    /**
-     * 默认是0
-            0 ： 公开
-            10：粉丝
-            20：仅自己
-     */
-    private Integer visible;
-    /**
-     * 点赞数量，默认是0
+     * 评论的点赞数量
      */
     private Integer hits;
     /**
-     * 评论的数量，默认是0
+     * 被评论人的id
      */
-    private Integer commentsCount;
+    private Integer otherUserId;
     /**
-     * 默认是0：
-            不是转发的：0
-            是转发的 ： 转发的动态的 id
+     * 评论者的id
      */
-    private Integer forwardDynamicId;
+    private Integer userId;
+    /**
+     * 动态的id
+     */
+    private Integer dynamicId;
+    /**
+     * 这条评论是否是回复评论的：
+            不是 ： 0
+            是 ： 那条评论的id
+            
+     */
+    private Integer replyId;
 
     /**
-     * 发布动态用户的id
-     */
-    private Integer uerId;
-
-    /**
-     *  发布动态的用户
+     *  发表评论的用户
      *  表示此属性不映射到数据库
      */
     @TableField(exist = false)
     private User user;
+
+    /**
+     *  评论的动态
+     *  表示此属性不映射到数据库
+     */
+    @TableField(exist = false)
+    private Dynamic dynamic;
 
 }
 

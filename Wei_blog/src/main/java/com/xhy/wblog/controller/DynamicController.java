@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-// 电台发布模块
+// 动态发布模块
 
 @RestController
 @RequestMapping("/dynamic")
@@ -31,7 +31,7 @@ public class DynamicController {
 
     // 自动注入service
     @Autowired
-    private DynamicService service;
+    private DynamicService dynamicService;
 
 
     // 发布动态,带文件的
@@ -57,7 +57,7 @@ public class DynamicController {
                             result = FileUpload.uploadImage(file, request, null);
                         } else {
                             // 如果是编辑，将以前的图片数据放这儿
-                            result = FileUpload.uploadImage(file, request, service.getById(id).getFile());
+                            result = FileUpload.uploadImage(file, request, dynamicService.getById(id).getFile());
 
                         }
                         map.put("file" + i, result);
@@ -75,7 +75,7 @@ public class DynamicController {
                 publishVo.setFileVo(filePath);
 
                 // 传入数据保存。
-                Dynamic resDynamic = service.save(publishVo);
+                Dynamic resDynamic = dynamicService.save(publishVo);
 
                 if (resDynamic != null) {
                     // 说明保存成功了。返回这条动态信息给前台

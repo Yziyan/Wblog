@@ -19,7 +19,7 @@ import java.util.Map;
 public class UserServiceImpl implements UserService {
     // 自动初始化改dao
     @Autowired
-    private UserDao dao;
+    private UserDao userDao;
 
 
     // 登录
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
         // 条件查询
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("email", bean.getEmail());
-        User user = dao.selectOne(queryWrapper);
+        User user = userDao.selectOne(queryWrapper);
         // 返回的map集合
         Map<String, Object> map = new HashMap<>();
         if (user != null) { // 代表改有改用户
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     public Map<String, Object> register(RegisterVo registerVo) throws Exception {
 
         QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("email", registerVo.getEmail());
-        User user = dao.selectOne(wrapper);
+        User user = userDao.selectOne(wrapper);
         Map<String, Object> map = new HashMap<>();
         if (user != null) {//如果不为空，证明已经被注册
             map.put("msg", "该邮件已经被注册!");
@@ -69,10 +69,10 @@ public class UserServiceImpl implements UserService {
             user.setPassword(key);
             user.setGender(registerVo.getGender());
             // 将
-            dao.insert(user);
+            userDao.insert(user);
             // 插入之后返回的id拼接到传过来的uri，保存到user的网址上
             user.setProfileUrl(registerVo.getProfileUrl() + user.getId());
-            dao.updateById(user);
+            userDao.updateById(user);
             map.put("msg", "注册成功!");
             map.put("flag", true);
         }
@@ -84,8 +84,8 @@ public class UserServiceImpl implements UserService {
     public User update(User bean) {
         // 更新一下信息就行了
         User user;
-        if (dao.updateById(bean) > 0) {
-            user = dao.selectById(bean.getId());
+        if (userDao.updateById(bean) > 0) {
+            user = userDao.selectById(bean.getId());
         } else {
             user = null;
         }
