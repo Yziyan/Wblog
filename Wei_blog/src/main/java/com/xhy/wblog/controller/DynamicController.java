@@ -88,13 +88,13 @@ public class DynamicController {
                 }
 
                 // 将文件名和文件路径返回，进行响应
-                return new PublicResult(true, Code.PUBLISH_OK, map, msg);
+                return new PublicResult(true, Code.PUSH_OK, map, msg);
             } else {
-                return new PublicResult(false, Code.PUBLISH_ERROR, null, "请登录");
+                return new PublicResult(false, Code.PUSH_ERROR, null, "请登录");
             }
 
         } catch (Exception e) {
-            return new PublicResult(true, Code.PUBLISH_ERROR, ExceptUtil.getSimpleException(e), "发布失败");
+            return new PublicResult(false, Code.PUSH_ERROR, ExceptUtil.getSimpleException(e), "发布失败");
         }
 
     }

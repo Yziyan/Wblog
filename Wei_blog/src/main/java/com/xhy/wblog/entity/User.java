@@ -45,7 +45,6 @@ public class User implements Serializable {
     private String name;
     /**
      * 用户生日
-            
      */
     private Date birthday;
     /**

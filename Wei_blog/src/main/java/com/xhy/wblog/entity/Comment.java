@@ -30,6 +30,12 @@ public class Comment implements Serializable {
     private Integer id;
     
     private Date createdTime;
+
+    /**
+     * 评论的内容
+     */
+    private String text;
+
     /**
      * 评论的点赞数量
      */
@@ -61,12 +67,7 @@ public class Comment implements Serializable {
     @TableField(exist = false)
     private User user;
 
-    /**
-     *  评论的动态
-     *  表示此属性不映射到数据库
-     */
-    @TableField(exist = false)
-    private Dynamic dynamic;
+
 
 }
 

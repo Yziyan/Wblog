@@ -1,6 +1,10 @@
 package com.xhy.wblog.service;
 
+import com.xhy.wblog.controller.vo.comment.PushCommentVo;
+import com.xhy.wblog.entity.Comment;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 // 评论相关
 
@@ -8,4 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface CommentService {
 
+    // 保存评论、
+    @Transactional(readOnly = false)
+    Map<String, Object> save(PushCommentVo bean);
 }
