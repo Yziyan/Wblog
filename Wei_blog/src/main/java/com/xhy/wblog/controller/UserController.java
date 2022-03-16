@@ -37,6 +37,7 @@ import java.util.*;
  */
 
 @RestController
+@CrossOrigin(value = "http://172.20.10.4:8080",allowCredentials = "true")
 @RequestMapping("/users")
 public class UserController {
 

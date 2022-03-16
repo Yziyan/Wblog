@@ -1,6 +1,7 @@
 package com.xhy.wblog.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.xhy.wblog.controller.vo.dynamic.PublishVo;
 import com.xhy.wblog.dao.DynamicDao;
@@ -97,4 +98,35 @@ public class DynamicServiceImpl implements DynamicService {
     public long getCount(){
         return dynamicDao.selectCount(null);
     }
+
+    @Override
+    public List<Dynamic> getHot(){
+        QueryWrapper<Dynamic> Wrapper = new QueryWrapper<>();
+        Wrapper.orderByDesc("hits");
+        PageHelper.startPage(1,3);
+        return dynamicDao.selectList(Wrapper);
+
+    }
+
+    @Override
+    public List<Dynamic> getNew(){
+        QueryWrapper<Dynamic> Wrapper = new QueryWrapper<>();
+        Wrapper.orderByDesc("created_time");
+        PageHelper.startPage(1,3);
+        return dynamicDao.selectList(Wrapper);
+    }
+
+    //更新点赞数
+    @Override
+    public boolean updateDynamicHits(int id,boolean setOrCan){
+        Dynamic dynamic = dynamicDao.selectById(id);
+        if(setOrCan){
+            dynamic.setHits(dynamic.getHits()+1);
+        }else {
+            dynamic.setHits(dynamic.getHits()-1);
+        }
+        return dynamicDao.updateById(dynamic)>0;
+    }
+
+
 }

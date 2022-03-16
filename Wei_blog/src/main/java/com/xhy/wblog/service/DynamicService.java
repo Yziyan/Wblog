@@ -25,10 +25,22 @@ public interface DynamicService {
     @Transactional(readOnly = false)
     boolean removeById(Integer id);
 
-    //分页查询，获取动态
-//    Page<Dynamic> getNewDynamic(int countnum, int nums);
-//
+    //分页查询
     List<Dynamic> findAllPage(int count,int num);
 
+    //获取数据总数
     long getCount();
+
+    //根据点赞数获取最新动态
+    List<Dynamic> getHot();
+
+    //根据时间获取最新动态
+    List<Dynamic> getNew();
+
+    //点赞数增减
+    @Transactional(readOnly = false)
+    boolean updateDynamicHits(int id,boolean setOrCan);
+
+
+
 }

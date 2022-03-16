@@ -9,7 +9,7 @@ import lombok.ToString;
 @AllArgsConstructor    // 生成全参构造
 @NoArgsConstructor     // 生成空构造方法
 @ToString
-public class RemoveVo {
+public class DynamicIdVo {
 
     private Integer id;
 }

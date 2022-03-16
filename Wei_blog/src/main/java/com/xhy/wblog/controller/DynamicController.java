@@ -1,14 +1,11 @@
 package com.xhy.wblog.controller;
 
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import com.xhy.wblog.controller.result.Code;
 import com.xhy.wblog.controller.result.PublicResult;
 import com.xhy.wblog.controller.vo.dynamic.DynamicNew;
 import com.xhy.wblog.controller.vo.dynamic.PublishVo;
-import com.xhy.wblog.controller.vo.dynamic.RemoveVo;
+import com.xhy.wblog.controller.vo.dynamic.DynamicIdVo;
 import com.xhy.wblog.entity.Dynamic;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.CommentService;
@@ -115,7 +112,7 @@ public class DynamicController {
 
 
     @RequestMapping("/remove")
-    public PublicResult remove(@RequestBody RemoveVo removeVo){
+    public PublicResult remove(@RequestBody DynamicIdVo removeVo){
         try{
         if(dynamicService.removeById(removeVo.getId())) {
             return new PublicResult(true, Code.DELETE_OK, null, "删除成功");
@@ -147,6 +144,72 @@ public class DynamicController {
             return  new PublicResult(false,Code.QUERY_ERROR,null,"获取失败！");
         }catch (Exception e){
             return  new PublicResult(false,Code.QUERY_ERROR,ExceptUtil.getSimpleException(e),"获取失败！");
+        }
+    }
+
+    //获取最新的动态
+    @RequestMapping("/getNewDynamic")
+    public PublicResult getNewDynamic(){
+        try {
+            List<Dynamic> newDynamic = dynamicService.getNew();
+            if(newDynamic!=null){
+                for (Dynamic dynamic:newDynamic) {
+                    User user = userService.selectById(dynamic.getUerId());
+                    dynamic.setUser(user);
+                }
+                return new PublicResult(true,Code.QUERY_OK,newDynamic,"获取成功！");
+            }else {
+                return new PublicResult(false,Code.QUERY_ERROR,null,"获取失败！");
+            }
+        }catch (Exception e){
+            return new PublicResult(false,Code.QUERY_ERROR,ExceptUtil.getSimpleException(e),"出现了未知错误！");
+        }
+    }
+
+    //获取最火的动态（最高的点赞数量）
+    @RequestMapping("/getHotDynamic")
+    public PublicResult getHotDynamic(){
+        try {
+            List<Dynamic> hotDynamic = dynamicService.getHot();
+            if(hotDynamic!=null) {
+                return new PublicResult(true, Code.QUERY_OK, hotDynamic, "获取成功！");
+            }else {
+                return new PublicResult(false,Code.QUERY_ERROR,null,"获取失败！");
+            }
+        } catch (Exception e) {
+            return new PublicResult(false,Code.QUERY_ERROR,ExceptUtil.getSimpleException(e),"出现了未知错误！");
+        }
+    }
+
+    @RequestMapping("/cancelLike")
+    public PublicResult cancelLike(@RequestBody DynamicIdVo dynamicIdVo){
+        try {
+            if(dynamicService.updateDynamicHits(dynamicIdVo.getId(),false)){
+                Dynamic byId = dynamicService.getById(dynamicIdVo.getId());
+                User user = userService.selectById(byId.getUerId());
+                byId.setUser(user);
+                return new PublicResult(true, Code.UPDATE_OK, byId, "获取成功！");
+            } else {
+                return new PublicResult(false,Code.QUERY_ERROR,null,"获取失败！");
+            }
+        }catch (Exception e){
+            return new PublicResult(false,Code.QUERY_ERROR,ExceptUtil.getSimpleException(e),"出现了未知错误！");
+        }
+    }
+
+    @RequestMapping("/setLike")
+    public PublicResult setLike(@RequestBody DynamicIdVo dynamicIdVo){
+        try {
+            if(dynamicService.updateDynamicHits(dynamicIdVo.getId(),true)){
+                Dynamic byId = dynamicService.getById(dynamicIdVo.getId());
+                User user = userService.selectById(byId.getUerId());
+                byId.setUser(user);
+                return new PublicResult(true, Code.UPDATE_OK, byId, "获取成功！");
+            } else {
+                return new PublicResult(false,Code.QUERY_ERROR,null,"获取失败！");
+            }
+        }catch (Exception e){
+            return new PublicResult(false,Code.QUERY_ERROR,ExceptUtil.getSimpleException(e),"出现了未知错误！");
         }
     }
 
