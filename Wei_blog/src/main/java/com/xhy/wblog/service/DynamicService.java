@@ -25,7 +25,9 @@ public interface DynamicService {
     @Transactional(readOnly = false)
     boolean removeById(Integer id);
 
-    //分页查询
+    //分页查询，获取动态
+//    Page<Dynamic> getNewDynamic(int countnum, int nums);
+//
     List<Dynamic> findAllPage(int count,int num);
 
     //获取数据总数
