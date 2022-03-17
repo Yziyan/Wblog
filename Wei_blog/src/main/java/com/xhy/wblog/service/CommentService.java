@@ -29,4 +29,11 @@ public interface CommentService {
 
     // 通过id查询评论
     Comment get(Integer id);
+
+    // 点赞功能
+    @Transactional(readOnly = false)
+    boolean updateHits(Integer commentId, String choose);
+
+    // 获取当前评论的点赞数
+    Integer getHits(Integer commentId);
 }

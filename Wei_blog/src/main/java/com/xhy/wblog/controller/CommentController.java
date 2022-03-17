@@ -71,13 +71,15 @@ public class CommentController {
                 if (commentService.removeById(id)) {
                     return new PublicResult(true, Code.DELETE_OK, null, "删除成功");
                 } else {
-                    return new PublicResult(false, Code.DELETE_ERROR, null, "出现了一个未知的错误");
+                    return new PublicResult(false, Code.DELETE_ERROR,
+                            null, "出现了一个未知的错误");
                 }
             } else {
                 return new PublicResult(false, Code.DELETE_ERROR, null, "请登录");
             }
         } catch (Exception e) {
-            return new PublicResult(false, Code.DELETE_ERROR, ExceptUtil.getSimpleException(e), "删除失败");
+            return new PublicResult(false, Code.DELETE_ERROR,
+                    ExceptUtil.getSimpleException(e), "删除失败");
         }
     }
 
@@ -94,7 +96,43 @@ public class CommentController {
                 return new PublicResult(false, Code.QUERY_ERROR, null, "还没有评论！");
             }
         } catch (Exception e) {
-            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "出现了一个未知的错误");
+            return new PublicResult(false, Code.QUERY_ERROR,
+                    ExceptUtil.getSimpleException(e), "出现了一个未知的错误");
+        }
+    }
+
+    // 点赞
+    @RequestMapping("setLike")
+    public PublicResult setLike(Integer commentId) {
+        try {
+            if (commentService.updateHits(commentId, "set")) {
+                // 设置成功返回当前的点赞数量
+                return new PublicResult(true, Code.UPLOAD_OK,
+                        commentService.getHits(commentId), "点赞成功");
+            } else {
+                return new PublicResult(false, Code.UPDATE_ERROR, null, "点赞失败");
+            }
+
+        } catch (Exception e) {
+            return new PublicResult(false, Code.UPDATE_ERROR,
+                    ExceptUtil.getSimpleException(e), "出现了一个未知的错误");
+        }
+    }
+
+    // 点赞
+    @RequestMapping("cancelLike")
+    public PublicResult cancelLike(Integer commentId) {
+        try {
+            if (commentService.updateHits(commentId, "cancel")) {
+                // 设置成功返回当前的点赞数量
+                return new PublicResult(true, Code.UPLOAD_OK,
+                        commentService.getHits(commentId), "取消点赞成功");
+            } else {
+                return new PublicResult(false, Code.UPDATE_ERROR, null, "取消点赞失败");
+            }
+        } catch (Exception e) {
+            return new PublicResult(false, Code.UPDATE_ERROR,
+                    ExceptUtil.getSimpleException(e), "出现了一个未知的错误");
         }
     }
 

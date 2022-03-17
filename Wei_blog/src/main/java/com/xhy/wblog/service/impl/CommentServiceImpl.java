@@ -150,4 +150,31 @@ public class CommentServiceImpl implements CommentService {
         return commentDao.selectById(id);
     }
 
+    /**
+     * 点赞功能、取消点赞
+     * @param commentId : 点赞评论的id
+     * @return
+     */
+    @Override
+    public boolean updateHits(Integer commentId, String choose) {
+        // 查出要点赞的评论
+        Comment comment = commentDao.selectById(commentId);
+        if (choose.equals("set")) { // 若是点赞就 + 1
+            comment.setHits(comment.getHits() + 1);
+        } else {
+            comment.setHits(comment.getHits() - 1);
+        }
+        return commentDao.updateById(comment) > 0;
+    }
+
+    /**
+     * 获取当前评论的点赞数
+     * @param commentId :评论id
+     * @return ： 点赞数
+     */
+    @Override
+    public Integer getHits(Integer commentId) {
+        return commentDao.selectById(commentId).getHits();
+    }
+
 }
