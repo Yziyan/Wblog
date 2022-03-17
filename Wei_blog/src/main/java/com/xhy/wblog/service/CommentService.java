@@ -1,9 +1,11 @@
 package com.xhy.wblog.service;
 
+import com.xhy.wblog.controller.vo.comment.CommentListVo;
 import com.xhy.wblog.controller.vo.comment.PushCommentVo;
 import com.xhy.wblog.entity.Comment;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 // 评论相关
@@ -18,4 +20,13 @@ public interface CommentService {
     // 保存评论、
     @Transactional(readOnly = false)
     Map<String, Object> save(PushCommentVo bean);
+
+    // 删除评论
+    @Transactional(readOnly = false)
+    boolean removeById(Integer id);
+    // 查询评论
+    List<Comment> listPage(CommentListVo listVo);
+
+    // 通过id查询评论
+    Comment get(Integer id);
 }

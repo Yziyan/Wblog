@@ -3,9 +3,12 @@ package com.xhy.wblog.controller;
 
 import com.xhy.wblog.controller.result.Code;
 import com.xhy.wblog.controller.result.PublicResult;
+import com.xhy.wblog.controller.vo.comment.CommentListVo;
 import com.xhy.wblog.controller.vo.comment.PushCommentVo;
+import com.xhy.wblog.entity.Comment;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.CommentService;
+import com.xhy.wblog.service.DynamicService;
 import com.xhy.wblog.utils.exception.ExceptUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 
@@ -26,7 +30,9 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-
+    // 自动注入service
+    @Autowired
+    private DynamicService dynamicService;
     // 发表评论
 
     @RequestMapping("/pushComment")
@@ -48,5 +54,48 @@ public class CommentController {
         }
     }
 
+    // 删除评论
+    @RequestMapping("/removeComment")
+    public PublicResult removeComment(Integer id, HttpServletRequest request) {
+        try {
+            // 获取登录的user
+            User user = (User) request.getSession().getAttribute("user");
+
+            if (user != null) { // 登录过了 ，可以操作
+
+                // 查出是哪个用户发了这条评论、若不是登录的用户，则无权限删除
+                Comment comment = commentService.get(id);
+                Integer commUserId = comment.getUserId();
+                if (commUserId != user.getId()) return new PublicResult(false,
+                        Code.DELETE_ERROR, null, "不是你的评论，你无法删除");
+                if (commentService.removeById(id)) {
+                    return new PublicResult(true, Code.DELETE_OK, null, "删除成功");
+                } else {
+                    return new PublicResult(false, Code.DELETE_ERROR, null, "出现了一个未知的错误");
+                }
+            } else {
+                return new PublicResult(false, Code.DELETE_ERROR, null, "请登录");
+            }
+        } catch (Exception e) {
+            return new PublicResult(false, Code.DELETE_ERROR, ExceptUtil.getSimpleException(e), "删除失败");
+        }
+    }
+
+    // 查看评论
+    @RequestMapping("list")
+    public PublicResult list(@RequestBody CommentListVo listVo) {
+        try {
+
+            List<Comment> comments = commentService.listPage(listVo);
+            if (comments.size() > 0) {
+                //  若有评论，则返回评论
+                return new PublicResult(true, Code.QUERY_OK, comments, "评论加载成功");
+            } else {
+                return new PublicResult(false, Code.QUERY_ERROR, null, "还没有评论！");
+            }
+        } catch (Exception e) {
+            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "出现了一个未知的错误");
+        }
+    }
 
 }

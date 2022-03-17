@@ -192,6 +192,8 @@ public class UserController {
 
                 // 将整合好的参数更新到数据库,并且将用户最新的信息返回
                 User resUser = userService.update(bean);
+                // 更新session
+                session.setAttribute("user", resUser);
                 return new PublicResult(true, Code.UPDATE_OK, resUser, "修改成功");
 
             } else {
@@ -224,6 +226,8 @@ public class UserController {
                 User resUser = userService.update(user);
                 map.put("user", resUser);
 
+                // 更新session
+                request.getSession().setAttribute("user", resUser);
                 // 将文件名和文件路径返回，进行响应
                 return new PublicResult(true, Code.UPLOAD_OK, map, "图片上传成功");
 

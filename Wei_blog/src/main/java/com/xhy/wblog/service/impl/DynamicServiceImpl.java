@@ -45,6 +45,10 @@ public class DynamicServiceImpl implements DynamicService {
                 resDynamic = dynamicDao.selectById(dynamic.getId());
                 // 给动态注入依赖的用户
                 resUser = userDao.selectById(bean.getUserId());
+                // 将用户的动态数量加1
+                Integer dynamicCount = resUser.getDynamicCount() + 1;
+                resUser.setDynamicCount(dynamicCount);
+                userDao.updateById(resUser);
                 resDynamic.setUser(resUser);
                 return resDynamic;  // 成功就返回刚插入的这条动态
             } else { // 保存失败了

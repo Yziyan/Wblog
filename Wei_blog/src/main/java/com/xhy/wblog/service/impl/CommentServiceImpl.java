@@ -1,5 +1,8 @@
 package com.xhy.wblog.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.xhy.wblog.controller.vo.comment.CommentListVo;
 import com.xhy.wblog.controller.vo.comment.PushCommentVo;
 import com.xhy.wblog.dao.CommentDao;
 import com.xhy.wblog.dao.DynamicDao;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -26,6 +30,19 @@ public class CommentServiceImpl implements CommentService {
     // 用来返回对象的信息
     @Autowired
     private UserDao userDao;
+
+    // 修改评论数量
+    private void updateCount(Integer dynamicId, String choose) {
+        Dynamic dynamic = dynamicDao.selectById(dynamicId);
+        Integer commentCount = dynamic.getCommentsCount();
+        if (choose.equals("增加")) {
+            commentCount++;
+        } else {
+            commentCount--;
+        }
+        dynamic.setCommentsCount(commentCount);
+        dynamicDao.updateById(dynamic);
+    }
 
     public Comment getCommentById(Integer dynamicId){
         return commentDao.selectById(dynamicId);
@@ -62,6 +79,9 @@ public class CommentServiceImpl implements CommentService {
             }
             // 查出必须的，评论的是哪一条动态、是谁评论的
             Dynamic dynamic = dynamicDao.selectById(dynamicId);
+            // 将评论数量+1
+            updateCount(dynamicId, "增加");
+
             dynamic.setUser(userDao.selectById(dynamic.getUerId()));
             dynamic.getUser().setPassword(null);
 
@@ -79,5 +99,55 @@ public class CommentServiceImpl implements CommentService {
 
     }
 
+    /**
+     * 删除评论模块
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean removeById(Integer id) {
+
+        Integer dynamicId = commentDao.selectById(id).getDynamicId();
+        if (commentDao.deleteById(id) > 0) { // 说明删除成功，还需要将动态的评论数减1
+            updateCount(dynamicId, "减少");
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    /**
+     * 查询评论信息
+      * @param listVo 请求的次数和动态的id
+     * @return 五条评论
+     */
+    @Override
+    public List<Comment> listPage(CommentListVo listVo) {
+
+        Integer pagNum = (listVo.getReqCount() - 1) * 5;
+        PageHelper.startPage(pagNum,5);
+        QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("dynamic_id", listVo.getDynamicId());
+        List<Comment> comments = commentDao.selectList(queryWrapper);
+        for (Comment comment : comments) {
+            // 注入评论的用户，并且设置密码为null
+            Integer userId = comment.getUserId();
+            User user = userDao.selectById(userId);
+            user.setPassword(null);
+            comment.setUser(user);
+        }
+        return comments;
+    }
+
+    /**
+     * 通过id查询评论
+     * @param id 评论的id
+     * @return 对应的一条评论
+     */
+    @Override
+    public Comment get(Integer id) {
+        return commentDao.selectById(id);
+    }
 
 }
