@@ -8,6 +8,7 @@ import com.xhy.wblog.dao.DynamicDao;
 import com.xhy.wblog.dao.UserDao;
 import com.xhy.wblog.entity.Dynamic;
 import com.xhy.wblog.entity.User;
+import com.xhy.wblog.service.CommentService;
 import com.xhy.wblog.service.DynamicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,9 @@ public class DynamicServiceImpl implements DynamicService {
     // 用来返回对象的信息
     @Autowired
     private UserDao userDao;
+    //用来返回评论信息
+    @Autowired
+    private CommentService commentService;
     // 动态发布、动态编辑、保存到数据库
     @Override
     public Dynamic save(PublishVo bean) {
@@ -78,8 +82,11 @@ public class DynamicServiceImpl implements DynamicService {
     }
 
     @Override
-    public boolean removeById(Integer id) {
-       return dynamicDao.deleteById(id)>0;
+    public boolean removeById(Integer id){
+        User user = userDao.selectById(id);
+        user.setDynamicCount(user.getDynamicCount()-1);//动态发布数量-1
+        userDao.update(user,null);
+        return dynamicDao.deleteById(id)>0;
     }
 
 //    @Override

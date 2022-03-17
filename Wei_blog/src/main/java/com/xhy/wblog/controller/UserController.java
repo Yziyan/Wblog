@@ -55,7 +55,7 @@ public class UserController {
 
 
     //邮件发送验证码
-    @RequestMapping("email")
+    @RequestMapping("/email")
     public PublicResult sendEmail(@RequestBody RegisterVo registerVo){
         EmaiUtils emaiUtils = new EmaiUtils();
         // 创建Kaptcha对象
@@ -151,7 +151,7 @@ public class UserController {
 
     }
 
-    @RequestMapping("register")
+    @RequestMapping("/register")
     public PublicResult register(@RequestBody RegisterVo registerVo, HttpServletRequest request) {
         try {
             String captcha = registerVo.getCaptcha().toLowerCase();
