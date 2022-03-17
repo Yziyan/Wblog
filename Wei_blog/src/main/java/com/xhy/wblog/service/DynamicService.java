@@ -28,7 +28,7 @@ public interface DynamicService {
     //分页查询，获取动态
 //    Page<Dynamic> getNewDynamic(int countnum, int nums);
 //
-    List<Dynamic> findAllPage(int count,int num);
+    List<Dynamic> findAllPage(Integer pageNum, Integer pageSize);
 
     //获取数据总数
     long getCount();

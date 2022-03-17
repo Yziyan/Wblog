@@ -3,7 +3,6 @@ package com.xhy.wblog.controller;
 
 import com.xhy.wblog.controller.result.Code;
 import com.xhy.wblog.controller.result.PublicResult;
-import com.xhy.wblog.controller.vo.dynamic.DynamicNew;
 import com.xhy.wblog.controller.vo.dynamic.PublishVo;
 import com.xhy.wblog.controller.vo.dynamic.DynamicIdVo;
 import com.xhy.wblog.entity.Dynamic;
@@ -125,19 +124,28 @@ public class DynamicController {
     }
 
     @RequestMapping("/getOldDynamic")
-    public PublicResult getOldDynamic(@RequestBody DynamicNew dynamicNew){
+    public PublicResult getOldDynamic(Integer reqCount){
         try {
             //获得动态
-            List<Dynamic> newDynamic = dynamicService.findAllPage(dynamicNew.getCount(),dynamicNew.getNums());
+            // 每页条数
+            Integer pageSize = 2;
+            // 偏移量
+            Integer pageNum = 2 * (reqCount - 1);
+            List<Dynamic> newDynamic = dynamicService.findAllPage(pageNum, pageSize);
             if(newDynamic!=null){//动态不为空，去取得user
                 for (Dynamic dynamic:newDynamic) {
                     User user = userService.selectById(dynamic.getUerId());
+                    user.setPassword(null);
                     dynamic.setUser(user);
                 }
-                long count = dynamicService.getCount();
-                if(count<(dynamicNew.getNums()*(dynamicNew.getCount()-1)))//如果请求的（页数-1）*数量大于总数,返回没有动态
+                // 动态的总条数
+                long totalCount = dynamicService.getCount();
+
+                // 总页数
+                long totalPages = (totalCount + pageSize - 1) / pageSize;
+                if(reqCount > totalPages)// 如果请求的页数大于总页数，则告诉没有更多微博了！
                 {
-                    return new PublicResult(true,Code.QUERY_OVER,null,"没有动态了喔~请休息一下吧~");
+                    return new PublicResult(false, Code.QUERY_OVER,null,"没有动态了喔~请休息一下吧~");
                 }
                 return new PublicResult(true,Code.QUERY_OK,newDynamic,"获取成功!");
             }

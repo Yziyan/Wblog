@@ -93,9 +93,12 @@ public class DynamicServiceImpl implements DynamicService {
 
     //分页查询
     @Override
-    public List<Dynamic> findAllPage(int count,int num){
-        PageHelper.startPage(count,num);
-        return dynamicDao.selectList(null);
+    public List<Dynamic> findAllPage(Integer pageNum, Integer pageSize){
+
+        PageHelper.startPage(pageNum, pageSize);
+        QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("created_time");
+        return dynamicDao.selectList(queryWrapper);
     }
 
     @Override
