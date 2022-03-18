@@ -9,6 +9,9 @@ import com.xhy.wblog.service.FansService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class FansServiceImpl implements FansService {
 
@@ -23,7 +26,7 @@ public class FansServiceImpl implements FansService {
         try {
             Fans fans = new Fans();
             fans.setFansUserId(userId);
-            fans.setAttentionUseId(otherId);
+            fans.setAttentionUserId(otherId);
             fansDao.insert(fans);
             User user = userDao.selectById(userId);
             user.setFriendsCount(user.getFriendsCount()+1);
@@ -53,5 +56,19 @@ public class FansServiceImpl implements FansService {
         }catch (Exception e){
             return false;
         }
+    }
+
+    @Override
+    public List<User> getBeSubscript(int userId) {
+        QueryWrapper<Fans> wrapper1 = new QueryWrapper<>();
+        wrapper1.eq("fans_user_id",userId);
+        List<Fans> subscription = fansDao.selectList(wrapper1);//获取关注的人
+        List<User> ref= new ArrayList<>();
+        for (Fans f:subscription) {
+            User user = userDao.selectById(f.getAttentionUserId());
+            user.setPassword(null);
+            ref.add(user);
+        }
+        return ref;
     }
 }

@@ -160,6 +160,7 @@ public class DynamicController {
             if(newDynamic!=null){
                 for (Dynamic dynamic:newDynamic) {
                     User user = userService.selectById(dynamic.getUerId());
+                    user.setPassword(null);
                     dynamic.setUser(user);
                 }
                 return new PublicResult(true,Code.QUERY_OK,newDynamic,"获取成功！");
@@ -192,6 +193,7 @@ public class DynamicController {
             if(dynamicService.updateDynamicHits(dynamicIdVo.getId(),false)){
                 Dynamic byId = dynamicService.getById(dynamicIdVo.getId());
                 User user = userService.selectById(byId.getUerId());
+                user.setPassword(null);
                 byId.setUser(user);
                 return new PublicResult(true, Code.UPDATE_OK, byId, "获取成功！");
             } else {
@@ -208,6 +210,7 @@ public class DynamicController {
             if(dynamicService.updateDynamicHits(dynamicIdVo.getId(),true)){
                 Dynamic byId = dynamicService.getById(dynamicIdVo.getId());
                 User user = userService.selectById(byId.getUerId());
+                user.setPassword(null);
                 byId.setUser(user);
                 return new PublicResult(true, Code.UPDATE_OK, byId, "获取成功！");
             } else {

@@ -27,7 +27,7 @@ public class Fans {
     private Date createdTime;
 
     //被关注的人的id
-    private Integer attentionUseId;
+    private Integer attentionUserId;
 
     //关注人的id
     private Integer fansUserId;
