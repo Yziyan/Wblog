@@ -143,4 +143,13 @@ public class DynamicServiceImpl implements DynamicService {
     }
 
 
+
+    // 通过用户id查询所有动态
+    @Override
+    public List<Dynamic> getByUserId(Integer userId) {
+        QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("uer_id", userId);
+        return dynamicDao.selectList(queryWrapper);
+    }
+
 }

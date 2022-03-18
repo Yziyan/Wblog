@@ -96,6 +96,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User selectById(int id){
-        return userDao.selectById(id);
+        User user = userDao.selectById(id);
+        user.setPassword(null);
+        return user;
     }
 }

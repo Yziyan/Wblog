@@ -7,7 +7,9 @@ import com.xhy.wblog.controller.result.Code;
 import com.xhy.wblog.controller.result.PublicResult;
 import com.xhy.wblog.controller.vo.users.RegisterVo;
 import com.xhy.wblog.controller.vo.users.LoginVo;
+import com.xhy.wblog.entity.Dynamic;
 import com.xhy.wblog.entity.User;
+import com.xhy.wblog.service.DynamicService;
 import com.xhy.wblog.service.UserService;
 import com.xhy.wblog.utils.exception.ExceptUtil;
 import com.xhy.wblog.utils.sendemail.EmaiUtils;
@@ -48,6 +50,10 @@ public class UserController {
     // 自动注入service
     @Autowired
     private UserService userService;
+
+    // 自动组人dynamicService
+    @Autowired
+    private DynamicService dynamicService;
 
     //自动注入邮箱发送类
     @Autowired
@@ -116,14 +122,21 @@ public class UserController {
     public PublicResult login(@RequestBody LoginVo bean, HttpServletRequest request) {
 
         try {
-            Map<String, Object> map = userService.login(bean);
+
             String code = (String) request.getSession().getAttribute("code");
             String captcha = bean.getCaptcha().toLowerCase();
             if (!captcha.equals(code)) { // 验证码，错误
                 return new PublicResult(false, Code.LOGIN_ERROR, null, "验证码错误");
             } else { // 验证码正确
+
+                Map<String, Object> map = userService.login(bean);
                 if ((boolean) map.get("flag")) {
                     User user = (User) map.get("user");
+                    // 查出这个用户的动态
+                    List<Dynamic> dynamics = dynamicService.getByUserId(user.getId());
+                    // 保存到map中返回给前端
+                    map.put("dynamic", dynamics);
+
                     // 保存用户id及其access_token到session中
                     HttpSession session = request.getSession();
                     String access_token = UUID.randomUUID().toString(); // 保证不一样就行
@@ -161,7 +174,7 @@ public class UserController {
             } else { // 验证码正确
                 String url = String.valueOf(request.getRequestURL());
                 // http://localhost:8080/wblog/users   将这个传入service
-                String userUrl = url.substring(0, url.lastIndexOf("/") - 1);
+                String userUrl = url.substring(0, url.lastIndexOf("/")) + "/u";
                 registerVo.setProfileUrl(userUrl);
                 Map<String, Object> map = userService.register(registerVo);
 
@@ -238,5 +251,22 @@ public class UserController {
             return new PublicResult(true, Code.UPLOAD_ERROR, ExceptUtil.getSimpleException(e), "图片上传失败");
         }
 
+    }
+
+    @RequestMapping("u{id}")
+    public PublicResult admin(@PathVariable Integer id, HttpSession session) {
+        try {
+            // 查询此用户的信息、动态
+            User user = userService.selectById(id);
+            List<Dynamic> dynamics = dynamicService.getByUserId(id);
+
+            // 返回给客户端
+            Map<String, Object> map = new HashMap<>();
+            map.put("user", user);
+            map.put("dynamic", dynamics);
+            return new PublicResult(true, Code.QUERY_OK, map, user.getName() + "的主页");
+        } catch (Exception e) {
+            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "图片上传失败");
+        }
     }
 }

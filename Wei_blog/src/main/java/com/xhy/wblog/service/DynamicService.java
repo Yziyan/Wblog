@@ -45,4 +45,7 @@ public interface DynamicService {
 
 
 
+
+    // 通过用户id查询所有动态
+    List<Dynamic> getByUserId(Integer userId);
 }
