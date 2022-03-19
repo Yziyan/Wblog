@@ -126,8 +126,28 @@ public class DynamicServiceImpl implements DynamicService {
     public List<Dynamic> getNew(){
         QueryWrapper<Dynamic> Wrapper = new QueryWrapper<>();
         Wrapper.orderByDesc("created_time");
-        PageHelper.startPage(1,3);
-        return dynamicDao.selectList(Wrapper);
+        //PageHelper.startPage(1,3);
+        List<Dynamic> dynamics = dynamicDao.selectList(Wrapper);//返回所有信息
+        for (Dynamic d:dynamics) {
+            User user = userDao.selectById(d.getUerId());
+            if(user!=null){
+                user.setPassword(null);
+                d.setUser(user);
+            }
+            Integer forwardDynamicId = d.getForwardDynamicId();
+            if(forwardDynamicId!=0){//判断是不是转发,如果是，则加入转发动态
+                Dynamic dynamic = dynamicDao.selectById(forwardDynamicId);
+                if(dynamic!=null) {
+                    User user1 = userDao.selectById(d.getUerId());
+                    if(user1!=null){
+                        user1.setPassword(null);
+                        dynamic.setUser(user1);
+                    }
+                    d.setDynamic(dynamic);
+                }
+            }
+        }
+        return dynamics;
     }
 
     //更新点赞数

@@ -158,11 +158,6 @@ public class DynamicController {
         try {
             List<Dynamic> newDynamic = dynamicService.getNew();
             if(newDynamic!=null){
-                for (Dynamic dynamic:newDynamic) {
-                    User user = userService.selectById(dynamic.getUerId());
-                    user.setPassword(null);
-                    dynamic.setUser(user);
-                }
                 return new PublicResult(true,Code.QUERY_OK,newDynamic,"获取成功！");
             }else {
                 return new PublicResult(false,Code.QUERY_ERROR,null,"获取失败！");

@@ -77,5 +77,9 @@ public class Dynamic implements Serializable {
     @TableField(exist = false)
     private User user;
 
+    //转发的动态
+    @TableField(exist = false)
+    private Dynamic dynamic;
+
 }
 
