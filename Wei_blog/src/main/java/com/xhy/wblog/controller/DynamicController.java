@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,11 +55,12 @@ public class DynamicController {
 
             if (user != null) { // 登录过了 ，可以操作
                 Map<String, Object> map = new HashMap<>();
-                int i = 0;
                 StringBuilder builder = new StringBuilder();
                 UploadResult result;
 
                 if (files != null) { // 如果有图片，那么就遍历保存图片
+                    // 将图片参数，放到list集合中，返回给前端
+                    List<UploadResult> resFiles = new ArrayList<>();
                     for (MultipartFile file : files) {
                         if (id == null || id <= 0) {
                             result = FileUpload.uploadImage(file, request, null);
@@ -67,12 +69,13 @@ public class DynamicController {
                             result = FileUpload.uploadImage(file, request, dynamicService.getById(id).getFile());
 
                         }
-                        map.put("file" + i, result);
+                        resFiles.add(result);
                         // 将图片地址拼接起来。 并且用 ，隔开放在数据库中
                         builder.append(result.getImagePath() + ",");
-                        i++;
                     }
-                    builder.replace(builder.length() - 2, builder.length(), " " );
+                    // 保存到map集合中
+                    map.put("files" , resFiles);
+                    builder.replace(builder.length() - 1, builder.length(), " " );
                 }
 
                 // 保存到数据库的图片，若是 “ ” 则变成null在传入。
