@@ -11,6 +11,7 @@ import lombok.ToString;
 
 import java.util.Date;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 这是一张动态表(TDynamic)实体类
@@ -43,6 +44,10 @@ public class Dynamic implements Serializable {
      * 文件内容
      */
     private String file;
+
+    //文件路径
+    @TableField(exist = false)
+    private List<String> filePath;
     /**
      * 默认是0
             0 ： 公开
@@ -79,7 +84,7 @@ public class Dynamic implements Serializable {
 
     //转发的动态
     @TableField(exist = false)
-    private Dynamic dynamic;
+    private Dynamic forwardDynamic;
 
 }
 

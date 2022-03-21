@@ -14,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -129,6 +132,7 @@ public class DynamicServiceImpl implements DynamicService {
         //PageHelper.startPage(1,3);
         List<Dynamic> dynamics = dynamicDao.selectList(Wrapper);//返回所有信息
         for (Dynamic d:dynamics) {
+            d.setFilePath(getFilePath(d));
             User user = userDao.selectById(d.getUerId());
             if(user!=null){
                 user.setPassword(null);
@@ -138,16 +142,31 @@ public class DynamicServiceImpl implements DynamicService {
             if(forwardDynamicId!=0){//判断是不是转发,如果是，则加入转发动态
                 Dynamic dynamic = dynamicDao.selectById(forwardDynamicId);
                 if(dynamic!=null) {
+                    dynamic.setFilePath(getFilePath(dynamic));
                     User user1 = userDao.selectById(d.getUerId());
                     if(user1!=null){
                         user1.setPassword(null);
                         dynamic.setUser(user1);
                     }
-                    d.setDynamic(dynamic);
+                    d.setForwardDynamic(dynamic);
                 }
             }
         }
         return dynamics;
+    }
+
+    //文件路径
+    public List<String> getFilePath(Dynamic dynamic){
+        String context = "http://120.25.125.57:8080/xhywblog/";
+        String file = dynamic.getFile();
+        if(file!=null){
+            String[] files = file.split(",");
+            for (int i = 0;i<files.length;i++) {
+                files[i] = context+files[i];
+            }
+            return Arrays.asList(files);
+        }
+        return null;
     }
 
     //更新点赞数
