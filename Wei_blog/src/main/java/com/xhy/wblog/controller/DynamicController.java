@@ -157,9 +157,12 @@ public class DynamicController {
 
     //获取最新的动态
     @RequestMapping("/getNewDynamic")
-    public PublicResult getNewDynamic(){
+    public PublicResult getNewDynamic(HttpServletRequest request){
         try {
-            List<Dynamic> newDynamic = dynamicService.getNew();
+//            String url = String.valueOf(request.getContextPath());
+            String appContext = request.getContextPath();
+            String basePath =request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort() + appContext+"/";
+            List<Dynamic> newDynamic = dynamicService.getNew(basePath);
             if(newDynamic!=null){
                 return new PublicResult(true,Code.QUERY_OK,newDynamic,"获取成功！");
             }else {

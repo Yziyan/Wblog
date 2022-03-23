@@ -86,10 +86,12 @@ public class DynamicServiceImpl implements DynamicService {
 
     @Override
     public boolean removeById(Integer id){
-        User user = userDao.selectById(id);
+        Dynamic dynamic = dynamicDao.selectById(id);
+        dynamic.setEnable(0);
+        User user = userDao.selectById(dynamic.getUerId());
         user.setDynamicCount(user.getDynamicCount()-1);//动态发布数量-1
-        userDao.update(user,null);
-        return dynamicDao.deleteById(id)>0;
+        userDao.updateById(user);
+        return dynamicDao.updateById(dynamic)>0;
     }
 
 //    @Override
@@ -119,50 +121,59 @@ public class DynamicServiceImpl implements DynamicService {
     @Override
     public List<Dynamic> getHot(){
         QueryWrapper<Dynamic> Wrapper = new QueryWrapper<>();
-        Wrapper.orderByDesc("hits");
-        PageHelper.startPage(1,3);
+        Wrapper.orderByDesc("hits").eq("enable",1);
+        PageHelper.startPage(1,10);
         return dynamicDao.selectList(Wrapper);
 
     }
 
+    //获取最新动态
     @Override
-    public List<Dynamic> getNew(){
+    public List<Dynamic> getNew(String url){
         QueryWrapper<Dynamic> Wrapper = new QueryWrapper<>();
-        Wrapper.orderByDesc("created_time");
+        Wrapper.orderByDesc("created_time").eq("enable",1);
         //PageHelper.startPage(1,3);
         List<Dynamic> dynamics = dynamicDao.selectList(Wrapper);//返回所有信息
         for (Dynamic d:dynamics) {
-            d.setFilePath(getFilePath(d));
+            d.setFilePath(getFilePath(d,url));
             User user = userDao.selectById(d.getUerId());
             if(user!=null){
                 user.setPassword(null);
                 d.setUser(user);
             }
-            Integer forwardDynamicId = d.getForwardDynamicId();
-            if(forwardDynamicId!=0){//判断是不是转发,如果是，则加入转发动态
-                Dynamic dynamic = dynamicDao.selectById(forwardDynamicId);
-                if(dynamic!=null) {
-                    dynamic.setFilePath(getFilePath(dynamic));
-                    User user1 = userDao.selectById(d.getUerId());
-                    if(user1!=null){
-                        user1.setPassword(null);
-                        dynamic.setUser(user1);
-                    }
-                    d.setForwardDynamic(dynamic);
-                }
+            getForwardDynamics(d,url);
             }
-        }
         return dynamics;
     }
 
+    //获取转发嵌套
+    public Dynamic getForwardDynamics(Dynamic dynamic,String url){
+        Dynamic temp = dynamic;
+        Integer forwardDynamicId = temp.getForwardDynamicId();
+        while (forwardDynamicId!=0){
+            Dynamic d = dynamicDao.selectById(forwardDynamicId);
+            if(d!=null){
+                d.setFilePath(getFilePath(d,url));
+                User user1 = userDao.selectById(d.getUerId());
+                if(user1!=null){
+                    user1.setPassword(null);
+                    d.setUser(user1);
+                }
+                temp.setForwardDynamic(d);
+                temp = temp.getForwardDynamic();
+            }
+            forwardDynamicId = temp.getForwardDynamicId();
+        }
+        return dynamic;
+    }
+
     //文件路径
-    public List<String> getFilePath(Dynamic dynamic){
-        String context = "http://120.25.125.57:8080/xhywblog/";
+    public List<String> getFilePath(Dynamic dynamic,String url){
         String file = dynamic.getFile();
         if(file!=null){
             String[] files = file.split(",");
-            for (int i = 0;i<files.length;i++) {
-                files[i] = context+files[i];
+            for (int i = 0;i<files.length;i++){
+                files[i] = url + files[i];
             }
             return Arrays.asList(files);
         }
@@ -187,7 +198,7 @@ public class DynamicServiceImpl implements DynamicService {
     @Override
     public List<Dynamic> getByUserId(Integer userId) {
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("uer_id", userId);
+        queryWrapper.eq("uer_id", userId).eq("enable",1);
         return dynamicDao.selectList(queryWrapper);
     }
 

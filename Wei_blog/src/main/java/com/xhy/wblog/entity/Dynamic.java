@@ -75,6 +75,8 @@ public class Dynamic implements Serializable {
      */
     private Integer uerId;
 
+    private Integer enable;
+
     /**
      *  发布动态的用户
      *  表示此属性不映射到数据库

@@ -37,14 +37,15 @@ public interface DynamicService {
     List<Dynamic> getHot();
 
     //根据时间获取最新动态
-    List<Dynamic> getNew();
+    List<Dynamic> getNew(String url);
 
     //点赞数增减
     @Transactional(readOnly = false)
     boolean updateDynamicHits(int id,boolean setOrCan);
 
 
-
+    //获取转发嵌套
+    Dynamic getForwardDynamics(Dynamic dynamic,String url);
 
     // 通过用户id查询所有动态
     List<Dynamic> getByUserId(Integer userId);
