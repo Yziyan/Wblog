@@ -87,7 +87,6 @@ public class CommentController {
     @RequestMapping("list")
     public PublicResult list(@RequestBody CommentListVo listVo) {
         try {
-
             List<Comment> comments = commentService.listPage(listVo);
             if (comments.size() > 0) {
                 //  若有评论，则返回评论

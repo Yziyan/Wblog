@@ -266,7 +266,7 @@ public class UserController {
             map.put("dynamic", dynamics);
             return new PublicResult(true, Code.QUERY_OK, map, user.getName() + "的主页");
         } catch (Exception e) {
-            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "图片上传失败");
+            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "有一个未知的错误！");
         }
     }
 }
