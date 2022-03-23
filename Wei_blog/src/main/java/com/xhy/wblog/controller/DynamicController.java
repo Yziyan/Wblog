@@ -134,7 +134,7 @@ public class DynamicController {
             List<Dynamic> newDynamic = dynamicService.findAllPage(pageNum, pageSize);
             if(newDynamic!=null){//动态不为空，去取得user
                 for (Dynamic dynamic:newDynamic) {
-                    User user = userService.selectById(dynamic.getUerId());
+                    User user = userService.selectById(dynamic.getUserId());
                     user.setPassword(null);
                     dynamic.setUser(user);
                 }
@@ -193,7 +193,7 @@ public class DynamicController {
         try {
             if(dynamicService.updateDynamicHits(dynamicIdVo.getId(),false)){
                 Dynamic byId = dynamicService.getById(dynamicIdVo.getId());
-                User user = userService.selectById(byId.getUerId());
+                User user = userService.selectById(byId.getUserId());
                 user.setPassword(null);
                 byId.setUser(user);
                 return new PublicResult(true, Code.UPDATE_OK, byId, "获取成功！");
@@ -210,7 +210,7 @@ public class DynamicController {
         try {
             if(dynamicService.updateDynamicHits(dynamicIdVo.getId(),true)){
                 Dynamic byId = dynamicService.getById(dynamicIdVo.getId());
-                User user = userService.selectById(byId.getUerId());
+                User user = userService.selectById(byId.getUserId());
                 user.setPassword(null);
                 byId.setUser(user);
                 return new PublicResult(true, Code.UPDATE_OK, byId, "获取成功！");

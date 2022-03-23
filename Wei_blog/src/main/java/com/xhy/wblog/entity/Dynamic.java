@@ -73,7 +73,7 @@ public class Dynamic implements Serializable {
     /**
      * 发布动态用户的id
      */
-    private Integer uerId;
+    private Integer userId;
 
     private Integer enable;
 

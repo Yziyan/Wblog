@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @Service
@@ -39,7 +37,7 @@ public class DynamicServiceImpl implements DynamicService {
         dynamic.setText(bean.getText());
         dynamic.setFile(bean.getFileVo());
         dynamic.setVisible(bean.getVisible());
-        dynamic.setUerId(bean.getUserId());
+        dynamic.setUserId(bean.getUserId());
         dynamic.setForwardDynamicId(bean.getForwardDynamicId());
 
         // 返回的动态结果
@@ -88,7 +86,7 @@ public class DynamicServiceImpl implements DynamicService {
     public boolean removeById(Integer id){
         Dynamic dynamic = dynamicDao.selectById(id);
         dynamic.setEnable(0);
-        User user = userDao.selectById(dynamic.getUerId());
+        User user = userDao.selectById(dynamic.getUserId());
         user.setDynamicCount(user.getDynamicCount()-1);//动态发布数量-1
         userDao.updateById(user);
         return dynamicDao.updateById(dynamic)>0;
@@ -136,7 +134,7 @@ public class DynamicServiceImpl implements DynamicService {
         List<Dynamic> dynamics = dynamicDao.selectList(Wrapper);//返回所有信息
         for (Dynamic d:dynamics) {
             d.setFilePath(getFilePath(d,url));
-            User user = userDao.selectById(d.getUerId());
+            User user = userDao.selectById(d.getUserId());
             if(user!=null){
                 user.setPassword(null);
                 d.setUser(user);
@@ -154,7 +152,7 @@ public class DynamicServiceImpl implements DynamicService {
             Dynamic d = dynamicDao.selectById(forwardDynamicId);
             if(d!=null){
                 d.setFilePath(getFilePath(d,url));
-                User user1 = userDao.selectById(d.getUerId());
+                User user1 = userDao.selectById(d.getUserId());
                 if(user1!=null){
                     user1.setPassword(null);
                     d.setUser(user1);
@@ -198,7 +196,7 @@ public class DynamicServiceImpl implements DynamicService {
     @Override
     public List<Dynamic> getByUserId(Integer userId) {
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("uer_id", userId).eq("enable",1);
+        queryWrapper.eq("user_id", userId).eq("enable",1);
         return dynamicDao.selectList(queryWrapper);
     }
 

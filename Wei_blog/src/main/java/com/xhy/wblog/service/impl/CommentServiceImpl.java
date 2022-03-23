@@ -82,7 +82,7 @@ public class CommentServiceImpl implements CommentService {
             // 将评论数量+1
             updateCount(dynamicId, "增加");
 
-            dynamic.setUser(userDao.selectById(dynamic.getUerId()));
+            dynamic.setUser(userDao.selectById(dynamic.getUserId()));
             dynamic.getUser().setPassword(null);
 
             // 将这条评论的信息返回，并且注写这条评论的用户
