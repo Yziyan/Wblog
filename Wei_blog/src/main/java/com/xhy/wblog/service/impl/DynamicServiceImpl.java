@@ -7,6 +7,7 @@ import com.xhy.wblog.controller.vo.dynamic.PublishVo;
 import com.xhy.wblog.dao.DynamicDao;
 import com.xhy.wblog.dao.UserDao;
 import com.xhy.wblog.entity.Dynamic;
+import com.xhy.wblog.entity.ForwardText;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.CommentService;
 import com.xhy.wblog.service.DynamicService;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -146,6 +148,7 @@ public class DynamicServiceImpl implements DynamicService {
 
     //获取转发嵌套
     public Dynamic getForwardDynamics(Dynamic dynamic,String url){
+        List<ForwardText> forwardTexts = new ArrayList<>();
         Dynamic temp = dynamic;
         Integer forwardDynamicId = temp.getForwardDynamicId();
         while (forwardDynamicId!=0){
@@ -154,14 +157,17 @@ public class DynamicServiceImpl implements DynamicService {
                 d.setFilePath(getFilePath(d,url));
                 User user1 = userDao.selectById(d.getUserId());
                 if(user1!=null){
-                    user1.setPassword(null);
-                    d.setUser(user1);
+//                    user1.setPassword(null);
+//                    d.setUser(user1);
+                    ForwardText forwardText = new ForwardText(user1.getProfileUrl(),user1.getName(),d.getText());
+                    forwardTexts.add(forwardText);
                 }
                 temp.setForwardDynamic(d);
                 temp = temp.getForwardDynamic();
             }
             forwardDynamicId = temp.getForwardDynamicId();
         }
+        dynamic.setForwardTexts(forwardTexts);
         return dynamic;
     }
 

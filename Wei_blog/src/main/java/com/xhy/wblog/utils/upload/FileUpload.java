@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class FileUpload {
 
@@ -42,7 +43,7 @@ public class FileUpload {
         // 文件后缀名
         String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
         // 生成新文件名
-        String newFileName = System.currentTimeMillis() + fileSuffix;
+        String newFileName =  UUID.randomUUID() + fileSuffix;
 
         //存储到数据库的文件路径
         String image = Constant.BASE_DIR + Constant.IMG_DIR + newFileName;

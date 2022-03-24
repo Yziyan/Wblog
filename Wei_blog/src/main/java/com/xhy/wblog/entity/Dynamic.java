@@ -40,6 +40,10 @@ public class Dynamic implements Serializable {
      * 文本内容
      */
     private String text;
+
+    @TableField(exist = false)
+    private List<ForwardText> forwardTexts;
+
     /**
      * 文件内容
      */
