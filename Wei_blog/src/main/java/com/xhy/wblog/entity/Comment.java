@@ -41,10 +41,6 @@ public class Comment implements Serializable {
      */
     private Integer hits;
     /**
-     * 被评论人的id
-     */
-    private Integer otherUserId;
-    /**
      * 评论者的id
      */
     private Integer userId;

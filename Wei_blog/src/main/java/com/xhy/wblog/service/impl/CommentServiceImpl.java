@@ -116,19 +116,16 @@ public class CommentServiceImpl implements CommentService {
         }
 
     }
-
     /**
      * 查询评论信息
-      * @param listVo 请求的次数和动态的id
+      * @param commentId 动态的id
      * @return 五条评论
      */
     @Override
-    public List<Comment> listPage(CommentListVo listVo) {
+    public List<Comment> list(Integer commentId) {
 
-        Integer pagNum = (listVo.getReqCount() - 1) * 5;
-        PageHelper.startPage(pagNum,5);
         QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("dynamic_id", listVo.getDynamicId());
+        queryWrapper.eq("dynamic_id", commentId);
         List<Comment> comments = commentDao.selectList(queryWrapper);
         for (Comment comment : comments) {
             // 注入评论的用户，并且设置密码为null

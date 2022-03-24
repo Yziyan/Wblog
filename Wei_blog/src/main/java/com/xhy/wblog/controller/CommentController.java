@@ -85,14 +85,14 @@ public class CommentController {
 
     // 查看评论
     @RequestMapping("list")
-    public PublicResult list(@RequestBody CommentListVo listVo) {
+    public PublicResult list(Integer commentId) {
         try {
-            List<Comment> comments = commentService.listPage(listVo);
+            List<Comment> comments = commentService.list(commentId);
             if (comments.size() > 0) {
                 //  若有评论，则返回评论
                 return new PublicResult(true, Code.QUERY_OK, comments, "评论加载成功");
             } else {
-                return new PublicResult(false, Code.QUERY_ERROR, null, "还没有评论！");
+                return new PublicResult(true, Code.QUERY_OK, null, "还没有评论！");
             }
         } catch (Exception e) {
             return new PublicResult(false, Code.QUERY_ERROR,

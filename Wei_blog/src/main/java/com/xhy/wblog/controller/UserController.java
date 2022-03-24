@@ -86,8 +86,8 @@ public class UserController {
         }else {
             return new PublicResult(true,Code.SAVE_ERROR,null,"邮箱发送失败！请检查邮箱是否正确并重新发送");
         }
-//        return emaiUtils.sendMail("，欢迎注册！验证码为:", "验证码", null,
-//                "2218094687@qq.com", javaMailSender, false);
+ //        return emaiUtils.sendMail("，欢迎注册！验证码为:", "验证码", null,
+ //                "2218094687@qq.com", javaMailSender, false);
     }
 
     // 验证码

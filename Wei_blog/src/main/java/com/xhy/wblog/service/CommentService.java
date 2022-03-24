@@ -25,7 +25,7 @@ public interface CommentService {
     @Transactional(readOnly = false)
     boolean removeById(Integer id);
     // 查询评论
-    List<Comment> listPage(CommentListVo listVo);
+    List<Comment> list(Integer commentId);
 
     // 通过id查询评论
     Comment get(Integer id);
