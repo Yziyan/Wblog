@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,7 +38,7 @@ import java.util.*;
  */
 
 @RestController
-@CrossOrigin(value = "http://172.20.10.4:8080",allowCredentials = "true")
+@CrossOrigin(value = "http://172.20.10.4:8080", allowCredentials = "true")
 @RequestMapping("/users")
 public class UserController {
 
@@ -62,7 +63,7 @@ public class UserController {
 
     //邮件发送验证码
     @RequestMapping("/email")
-    public PublicResult sendEmail(@RequestBody RegisterVo registerVo){
+    public PublicResult sendEmail(@RequestBody RegisterVo registerVo) {
         EmaiUtils emaiUtils = new EmaiUtils();
         // 创建Kaptcha对象
         DefaultKaptcha dk = new DefaultKaptcha();
@@ -74,20 +75,20 @@ public class UserController {
             Config config = new Config(properties);
             dk.setConfig(config);
         } catch (IOException e) {
-            return new PublicResult(true,Code.SAVE_ERROR,null,"网络波动，请重新申请！");
+            return new PublicResult(true, Code.SAVE_ERROR, null, "网络波动，请重新申请！");
         }
 
         // 验证码字符串
         String code = dk.createText();
 
-        if("发送成功".equals(emaiUtils.sendMail("欢迎注册！验证码为:"+code, "验证码", null, registerVo.getEmail(),
-                javaMailSender, false))){
-            return new PublicResult(true,Code.SAVE_OK,code,"邮箱已发送，请接收！");
-        }else {
-            return new PublicResult(true,Code.SAVE_ERROR,null,"邮箱发送失败！请检查邮箱是否正确并重新发送");
+        if ("发送成功".equals(emaiUtils.sendMail("欢迎注册！验证码为:" + code, "验证码", null, registerVo.getEmail(),
+                javaMailSender, false))) {
+            return new PublicResult(true, Code.SAVE_OK, code, "邮箱已发送，请接收！");
+        } else {
+            return new PublicResult(true, Code.SAVE_ERROR, null, "邮箱发送失败！请检查邮箱是否正确并重新发送");
         }
- //        return emaiUtils.sendMail("，欢迎注册！验证码为:", "验证码", null,
- //                "2218094687@qq.com", javaMailSender, false);
+        //        return emaiUtils.sendMail("，欢迎注册！验证码为:", "验证码", null,
+        //                "2218094687@qq.com", javaMailSender, false);
     }
 
     // 验证码

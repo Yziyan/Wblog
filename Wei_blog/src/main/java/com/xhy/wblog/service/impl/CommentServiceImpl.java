@@ -44,9 +44,10 @@ public class CommentServiceImpl implements CommentService {
         dynamicDao.updateById(dynamic);
     }
 
-    public Comment getCommentById(Integer dynamicId){
+    public Comment getCommentById(Integer dynamicId) {
         return commentDao.selectById(dynamicId);
     }
+
     // 保存评论、
     @Override
     public Map<String, Object> save(PushCommentVo bean) {
@@ -101,6 +102,7 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * 删除评论模块
+     *
      * @param id
      * @return
      */
@@ -116,9 +118,11 @@ public class CommentServiceImpl implements CommentService {
         }
 
     }
+
     /**
      * 查询评论信息
-      * @param commentId 动态的id
+     *
+     * @param commentId 动态的id
      * @return 五条评论
      */
     @Override
@@ -139,6 +143,7 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * 通过id查询评论
+     *
      * @param id 评论的id
      * @return 对应的一条评论
      */
@@ -149,6 +154,7 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * 点赞功能、取消点赞
+     *
      * @param commentId : 点赞评论的id
      * @return
      */
@@ -166,6 +172,7 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * 获取当前评论的点赞数
+     *
      * @param commentId :评论id
      * @return ： 点赞数
      */

@@ -30,40 +30,40 @@ public class FansController {
 
     //关注
     @RequestMapping("/subscription")
-    public PublicResult subscription(@RequestBody FansVo fansVo){
+    public PublicResult subscription(@RequestBody FansVo fansVo) {
         try {
-            if(fansService.addSubscription(fansVo.getUserId(),fansVo.getOtherId())){
-                return new PublicResult(true, Code.SAVE_OK,null,"关注成功!");
-            }else {
-                return new PublicResult(false,Code.SAVE_ERROR,null,"关注失败！");
+            if (fansService.addSubscription(fansVo.getUserId(), fansVo.getOtherId())) {
+                return new PublicResult(true, Code.SAVE_OK, null, "关注成功!");
+            } else {
+                return new PublicResult(false, Code.SAVE_ERROR, null, "关注失败！");
             }
-        }catch (Exception e){
-            return new PublicResult(false,Code.SAVE_ERROR, ExceptUtil.getSimpleException(e),"网络出现波动！请重新尝试");
+        } catch (Exception e) {
+            return new PublicResult(false, Code.SAVE_ERROR, ExceptUtil.getSimpleException(e), "网络出现波动！请重新尝试");
         }
     }
 
     //取消关注
     @RequestMapping("/cancelSubscription")
-    public PublicResult cancelSubscription(@RequestBody FansVo fansVo){
+    public PublicResult cancelSubscription(@RequestBody FansVo fansVo) {
         try {
-            if(fansService.cancelSubscription(fansVo.getUserId(), fansVo.getOtherId())){
-                return new PublicResult(true, Code.SAVE_OK,null,"取消关注成功!");
-            }else {
-                return new PublicResult(false,Code.SAVE_ERROR,null,"取消关注失败！");
+            if (fansService.cancelSubscription(fansVo.getUserId(), fansVo.getOtherId())) {
+                return new PublicResult(true, Code.SAVE_OK, null, "取消关注成功!");
+            } else {
+                return new PublicResult(false, Code.SAVE_ERROR, null, "取消关注失败！");
             }
-        }catch (Exception e){
-            return new PublicResult(false,Code.SAVE_ERROR, ExceptUtil.getSimpleException(e),"网络出现波动！请重新尝试");
+        } catch (Exception e) {
+            return new PublicResult(false, Code.SAVE_ERROR, ExceptUtil.getSimpleException(e), "网络出现波动！请重新尝试");
         }
     }
 
     //获取自己关注的人
     @RequestMapping("/getBeSubscript")
-    public PublicResult getBeSubscript(@RequestBody FansVo fansVo){
-        try{
+    public PublicResult getBeSubscript(@RequestBody FansVo fansVo) {
+        try {
             List<User> beSubscript = fansService.getBeSubscript(fansVo.getUserId());
-            return new PublicResult(true,Code.QUERY_OK,beSubscript,"获取成功！");
-        }catch (Exception e){
-            return new PublicResult(false,Code.QUERY_ERROR, ExceptUtil.getSimpleException(e),"网络出现波动！请重新尝试");
+            return new PublicResult(true, Code.QUERY_OK, beSubscript, "获取成功！");
+        } catch (Exception e) {
+            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "网络出现波动！请重新尝试");
         }
     }
 

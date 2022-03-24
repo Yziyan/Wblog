@@ -29,13 +29,13 @@ public class FansServiceImpl implements FansService {
             fans.setAttentionUserId(otherId);
             fansDao.insert(fans);
             User user = userDao.selectById(userId);
-            user.setFriendsCount(user.getFriendsCount()+1);
+            user.setFriendsCount(user.getFriendsCount() + 1);
             userDao.updateById(user);
             User user1 = userDao.selectById(otherId);
-            user1.setFansCount(user1.getFansCount()+1);
+            user1.setFansCount(user1.getFansCount() + 1);
             userDao.updateById(user1);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -44,16 +44,16 @@ public class FansServiceImpl implements FansService {
     public boolean cancelSubscription(int userId, int otherId) {
         try {
             QueryWrapper<Fans> wrapper = new QueryWrapper<>();
-            wrapper.eq("attention_user_id",otherId).eq("fans_user_id",userId);
+            wrapper.eq("attention_user_id", otherId).eq("fans_user_id", userId);
             fansDao.delete(wrapper);
             User user = userDao.selectById(userId);
-            user.setFriendsCount(user.getFriendsCount()-1);
+            user.setFriendsCount(user.getFriendsCount() - 1);
             userDao.updateById(user);
             User user1 = userDao.selectById(otherId);
-            user1.setFansCount(user1.getFansCount()-1);
+            user1.setFansCount(user1.getFansCount() - 1);
             userDao.updateById(user1);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -61,10 +61,10 @@ public class FansServiceImpl implements FansService {
     @Override
     public List<User> getBeSubscript(int userId) {
         QueryWrapper<Fans> wrapper1 = new QueryWrapper<>();
-        wrapper1.eq("fans_user_id",userId);
+        wrapper1.eq("fans_user_id", userId);
         List<Fans> subscription = fansDao.selectList(wrapper1);//获取关注的人
-        List<User> ref= new ArrayList<>();
-        for (Fans f:subscription) {
+        List<User> ref = new ArrayList<>();
+        for (Fans f : subscription) {
             User user = userDao.selectById(f.getAttentionUserId());
             user.setPassword(null);
             ref.add(user);

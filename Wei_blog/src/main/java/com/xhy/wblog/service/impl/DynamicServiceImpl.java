@@ -31,6 +31,7 @@ public class DynamicServiceImpl implements DynamicService {
     //用来返回评论信息
     @Autowired
     private CommentService commentService;
+
     // 动态发布、动态编辑、保存到数据库
     @Override
     public Dynamic save(PublishVo bean) {
@@ -80,18 +81,18 @@ public class DynamicServiceImpl implements DynamicService {
 
     // 通过id查询
     @Override
-    public Dynamic getById (Integer id) {
+    public Dynamic getById(Integer id) {
         return dynamicDao.selectById(id);
     }
 
     @Override
-    public boolean removeById(Integer id){
+    public boolean removeById(Integer id) {
         Dynamic dynamic = dynamicDao.selectById(id);
         dynamic.setEnable(0);
         User user = userDao.selectById(dynamic.getUserId());
-        user.setDynamicCount(user.getDynamicCount()-1);//动态发布数量-1
+        user.setDynamicCount(user.getDynamicCount() - 1);//动态发布数量-1
         userDao.updateById(user);
-        return dynamicDao.updateById(dynamic)>0;
+        return dynamicDao.updateById(dynamic) > 0;
     }
 
 //    @Override
@@ -102,10 +103,9 @@ public class DynamicServiceImpl implements DynamicService {
 //    }
 
 
-
     //分页查询
     @Override
-    public List<Dynamic> findAllPage(Integer pageNum, Integer pageSize){
+    public List<Dynamic> findAllPage(Integer pageNum, Integer pageSize) {
 
         PageHelper.startPage(pageNum, pageSize);
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
@@ -114,52 +114,52 @@ public class DynamicServiceImpl implements DynamicService {
     }
 
     @Override
-    public long getCount(){
+    public long getCount() {
         return dynamicDao.selectCount(null);
     }
 
     @Override
-    public List<Dynamic> getHot(){
+    public List<Dynamic> getHot() {
         QueryWrapper<Dynamic> Wrapper = new QueryWrapper<>();
-        Wrapper.orderByDesc("hits").eq("enable",1);
-        PageHelper.startPage(1,10);
+        Wrapper.orderByDesc("hits").eq("enable", 1);
+        PageHelper.startPage(1, 10);
         return dynamicDao.selectList(Wrapper);
 
     }
 
     //获取最新动态
     @Override
-    public List<Dynamic> getNew(String url){
+    public List<Dynamic> getNew(String url) {
         QueryWrapper<Dynamic> Wrapper = new QueryWrapper<>();
-        Wrapper.orderByDesc("created_time").eq("enable",1);
+        Wrapper.orderByDesc("created_time").eq("enable", 1);
         //PageHelper.startPage(1,3);
         List<Dynamic> dynamics = dynamicDao.selectList(Wrapper);//返回所有信息
-        for (Dynamic d:dynamics) {
-            d.setFilePath(getFilePath(d,url));
+        for (Dynamic d : dynamics) {
+            d.setFilePath(getFilePath(d, url));
             User user = userDao.selectById(d.getUserId());
-            if(user!=null){
+            if (user != null) {
                 user.setPassword(null);
                 d.setUser(user);
             }
-            getForwardDynamics(d,url);
-            }
+            getForwardDynamics(d, url);
+        }
         return dynamics;
     }
 
     //获取转发嵌套
-    public Dynamic getForwardDynamics(Dynamic dynamic,String url){
+    public Dynamic getForwardDynamics(Dynamic dynamic, String url) {
         List<ForwardText> forwardTexts = new ArrayList<>();
         Dynamic temp = dynamic;
         Integer forwardDynamicId = temp.getForwardDynamicId();
-        while (forwardDynamicId!=0){
+        while (forwardDynamicId != 0) {
             Dynamic d = dynamicDao.selectById(forwardDynamicId);
-            if(d!=null){
-                d.setFilePath(getFilePath(d,url));
+            if (d != null) {
+                d.setFilePath(getFilePath(d, url));
                 User user1 = userDao.selectById(d.getUserId());
-                if(user1!=null){
+                if (user1 != null) {
 //                    user1.setPassword(null);
 //                    d.setUser(user1);
-                    ForwardText forwardText = new ForwardText(user1.getProfileUrl(),user1.getName(),d.getText());
+                    ForwardText forwardText = new ForwardText(user1.getProfileUrl(), user1.getName(), d.getText());
                     forwardTexts.add(forwardText);
                 }
                 temp.setForwardDynamic(d);
@@ -172,11 +172,11 @@ public class DynamicServiceImpl implements DynamicService {
     }
 
     //文件路径
-    public List<String> getFilePath(Dynamic dynamic,String url){
+    public List<String> getFilePath(Dynamic dynamic, String url) {
         String file = dynamic.getFile();
-        if(file!=null){
+        if (file != null) {
             String[] files = file.split(",");
-            for (int i = 0;i<files.length;i++){
+            for (int i = 0; i < files.length; i++) {
                 files[i] = url + files[i];
             }
             return Arrays.asList(files);
@@ -186,23 +186,22 @@ public class DynamicServiceImpl implements DynamicService {
 
     //更新点赞数
     @Override
-    public boolean updateDynamicHits(int id,boolean setOrCan){
+    public boolean updateDynamicHits(int id, boolean setOrCan) {
         Dynamic dynamic = dynamicDao.selectById(id);
-        if(setOrCan){
-            dynamic.setHits(dynamic.getHits()+1);
-        }else {
-            dynamic.setHits(dynamic.getHits()-1);
+        if (setOrCan) {
+            dynamic.setHits(dynamic.getHits() + 1);
+        } else {
+            dynamic.setHits(dynamic.getHits() - 1);
         }
-        return dynamicDao.updateById(dynamic)>0;
+        return dynamicDao.updateById(dynamic) > 0;
     }
-
 
 
     // 通过用户id查询所有动态
     @Override
     public List<Dynamic> getByUserId(Integer userId) {
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", userId).eq("enable",1);
+        queryWrapper.eq("user_id", userId).eq("enable", 1);
         return dynamicDao.selectList(queryWrapper);
     }
 

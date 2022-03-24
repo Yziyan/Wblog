@@ -44,60 +44,64 @@ public class DynamicController {
     public PublicResult publish(@RequestParam(value = "file", required = false) MultipartFile[] files, PublishVo publishVo, HttpServletRequest request) {
 
         try {
-            // 改动态的id
+            // 该动态的id
             Integer id = publishVo.getId();
 
             // 获取登录的user
             User user = (User) request.getSession().getAttribute("user");
 
             //if (user != null) { // 登录过了 ，可以操作
-                Map<String, Object> map = new HashMap<>();
-                StringBuilder builder = new StringBuilder();
-                UploadResult result;
+            Map<String, Object> map = new HashMap<>();
+            StringBuilder builder = new StringBuilder();
+            UploadResult result;
 
-                if (files != null) { // 如果有图片，那么就遍历保存图片
-                    // 将图片参数，放到list集合中，返回给前端
-                    List<UploadResult> resFiles = new ArrayList<>();
-                    for (MultipartFile file : files) {
-                        if (id == null || id <= 0) {
-                            result = FileUpload.uploadImage(file, request, null);
-                        } else {
-                            // 如果是编辑，将以前的图片数据放这儿
-                            result = FileUpload.uploadImage(file, request, dynamicService.getById(id).getFile());
+            if (files != null) { // 如果有图片，那么就遍历保存图片
+                // 将图片参数，放到list集合中，返回给前端
+                List<UploadResult> resFiles = new ArrayList<>();
+                for (MultipartFile file : files) {
+                    if (id == null || id <= 0) {
+                        result = FileUpload.uploadImage(file, request, null);
+                    } else {
+                        // 如果是编辑，将以前的图片数据放这儿
+                        result = FileUpload.uploadImage(file, request, dynamicService.getById(id).getFile());
 
-                        }
-                        resFiles.add(result);
-                        // 将图片地址拼接起来。 并且用 ，隔开放在数据库中
-                        builder.append(result.getImagePath() + ",");
                     }
-                    // 保存到map集合中
-                    map.put("files" , resFiles);
-                    builder.replace(builder.length() - 1, builder.length(), " " );
+                    resFiles.add(result);
+                    // 将图片地址拼接起来。 并且用 ，隔开放在数据库中
+                    builder.append(result.getImagePath() + ",");
                 }
+                // 保存到map集合中
+                map.put("files", resFiles);
+                builder.replace(builder.length() - 1, builder.length(), " ");
+            }
 
-                // 保存到数据库的图片，若是 “ ” 则变成null在传入。
-                String filePath = String.valueOf(builder);
-                if (filePath != null && filePath.length() == 0) filePath = null;
-                // 将图片路径保存到数据库
-                publishVo.setFileVo(filePath);
+            // 保存到数据库的图片，若是 “ ” 则变成null在传入。
+            String filePath = String.valueOf(builder);
+            if (filePath != null && filePath.length() == 0) filePath = null;
+            // 将图片路径保存到数据库
+            publishVo.setFileVo(filePath);
 
-                // 传入数据保存。
-                Dynamic resDynamic = dynamicService.save(publishVo);
+            // 传入数据保存。
+            Dynamic resDynamic = dynamicService.save(publishVo);
 
-                if (resDynamic != null) {
-                    // 说明保存成功了。返回这条动态信息给前台
-                    map.put("dynamic", resDynamic);
+            if (resDynamic != null) {
+                // 说明保存成功了。返回这条动态信息给前台
+                map.put("dynamic", resDynamic);
+            }
+
+            Integer forwardDynamicId = resDynamic.getForwardDynamicId();
+            String msg = "编辑成功"; // 返回消息
+            if (id == null || id <= 0) {
+                msg = "转发成功";//
+                if (forwardDynamicId == 0 || forwardDynamicId == null) {
+                    msg = "动态发布成功";
                 }
+            }
 
-                String msg = "编辑成功"; // 返回消息
-                if (id == null || id <= 0) {
-                    msg = "动态发布成功"; //
-                }
-
-                // 将文件名和文件路径返回，进行响应
-                return new PublicResult(true, Code.PUSH_OK, map, msg);
+            // 将文件名和文件路径返回，进行响应
+            return new PublicResult(true, Code.PUSH_OK, map, msg);
             //} else {
-                //return new PublicResult(false, Code.PUSH_ERROR, null, "请登录");
+            //return new PublicResult(false, Code.PUSH_ERROR, null, "请登录");
             //}
 
         } catch (Exception e) {
@@ -108,20 +112,20 @@ public class DynamicController {
 
 
     @RequestMapping("/remove")
-    public PublicResult remove(@RequestBody DynamicIdVo removeVo){
-        try{
-        if(dynamicService.removeById(removeVo.getId())) {
-            return new PublicResult(true, Code.DELETE_OK, null, "删除成功");
-        }else {
-            return new PublicResult(false,Code.DELETE_ERROR,null,"删除失败！");
-        }
-        }catch (Exception e){
-            return new PublicResult(false,Code.DELETE_ERROR,ExceptUtil.getSimpleException(e),"出现了未知错误");
+    public PublicResult remove(@RequestBody DynamicIdVo removeVo) {
+        try {
+            if (dynamicService.removeById(removeVo.getId())) {
+                return new PublicResult(true, Code.DELETE_OK, null, "删除成功");
+            } else {
+                return new PublicResult(false, Code.DELETE_ERROR, null, "删除失败！");
+            }
+        } catch (Exception e) {
+            return new PublicResult(false, Code.DELETE_ERROR, ExceptUtil.getSimpleException(e), "出现了未知错误");
         }
     }
 
     @RequestMapping("/getOldDynamic")
-    public PublicResult getOldDynamic(Integer reqCount){
+    public PublicResult getOldDynamic(Integer reqCount) {
         try {
             //获得动态
             // 每页条数
@@ -129,8 +133,8 @@ public class DynamicController {
             // 偏移量
             Integer pageNum = 2 * (reqCount - 1);
             List<Dynamic> newDynamic = dynamicService.findAllPage(pageNum, pageSize);
-            if(newDynamic!=null){//动态不为空，去取得user
-                for (Dynamic dynamic:newDynamic) {
+            if (newDynamic != null) {//动态不为空，去取得user
+                for (Dynamic dynamic : newDynamic) {
                     User user = userService.selectById(dynamic.getUserId());
                     user.setPassword(null);
                     dynamic.setUser(user);
@@ -140,82 +144,82 @@ public class DynamicController {
 
                 // 总页数
                 long totalPages = (totalCount + pageSize - 1) / pageSize;
-                if(reqCount > totalPages)// 如果请求的页数大于总页数，则告诉没有更多微博了！
+                if (reqCount > totalPages)// 如果请求的页数大于总页数，则告诉没有更多微博了！
                 {
-                    return new PublicResult(false, Code.QUERY_OVER,null,"没有动态了喔~请休息一下吧~");
+                    return new PublicResult(false, Code.QUERY_OVER, null, "没有动态了喔~请休息一下吧~");
                 }
-                return new PublicResult(true,Code.QUERY_OK,newDynamic,"获取成功!");
+                return new PublicResult(true, Code.QUERY_OK, newDynamic, "获取成功!");
             }
-            return  new PublicResult(false,Code.QUERY_ERROR,null,"获取失败！");
-        }catch (Exception e){
-            return  new PublicResult(false,Code.QUERY_ERROR,ExceptUtil.getSimpleException(e),"获取失败！");
+            return new PublicResult(false, Code.QUERY_ERROR, null, "获取失败！");
+        } catch (Exception e) {
+            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "获取失败！");
         }
     }
 
     //获取最新的动态
     @RequestMapping("/getNewDynamic")
-    public PublicResult getNewDynamic(HttpServletRequest request){
+    public PublicResult getNewDynamic(HttpServletRequest request) {
         try {
 //            String url = String.valueOf(request.getContextPath());
             String appContext = request.getContextPath();
-            String basePath =request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort() + appContext+"/";
+            String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + appContext + "/";
             List<Dynamic> newDynamic = dynamicService.getNew(basePath);
-            if(newDynamic!=null){
-                return new PublicResult(true,Code.QUERY_OK,newDynamic,"获取成功！");
-            }else {
-                return new PublicResult(false,Code.QUERY_ERROR,null,"获取失败！");
+            if (newDynamic != null) {
+                return new PublicResult(true, Code.QUERY_OK, newDynamic, "获取成功！");
+            } else {
+                return new PublicResult(false, Code.QUERY_ERROR, null, "获取失败！");
             }
-        }catch (Exception e){
-            return new PublicResult(false,Code.QUERY_ERROR,ExceptUtil.getSimpleException(e),"出现了未知错误！");
+        } catch (Exception e) {
+            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "出现了未知错误！");
         }
     }
 
     //获取最火的动态（最高的点赞数量）
     @RequestMapping("/getHotDynamic")
-    public PublicResult getHotDynamic(){
+    public PublicResult getHotDynamic() {
         try {
             List<Dynamic> hotDynamic = dynamicService.getHot();
-            if(hotDynamic!=null) {
+            if (hotDynamic != null) {
                 return new PublicResult(true, Code.QUERY_OK, hotDynamic, "获取成功！");
-            }else {
-                return new PublicResult(false,Code.QUERY_ERROR,null,"获取失败！");
+            } else {
+                return new PublicResult(false, Code.QUERY_ERROR, null, "获取失败！");
             }
         } catch (Exception e) {
-            return new PublicResult(false,Code.QUERY_ERROR,ExceptUtil.getSimpleException(e),"出现了未知错误！");
+            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "出现了未知错误！");
         }
     }
 
     @RequestMapping("/cancelLike")
-    public PublicResult cancelLike(@RequestBody DynamicIdVo dynamicIdVo){
+    public PublicResult cancelLike(@RequestBody DynamicIdVo dynamicIdVo) {
         try {
-            if(dynamicService.updateDynamicHits(dynamicIdVo.getId(),false)){
+            if (dynamicService.updateDynamicHits(dynamicIdVo.getId(), false)) {
                 Dynamic byId = dynamicService.getById(dynamicIdVo.getId());
                 User user = userService.selectById(byId.getUserId());
                 user.setPassword(null);
                 byId.setUser(user);
                 return new PublicResult(true, Code.UPDATE_OK, byId, "获取成功！");
             } else {
-                return new PublicResult(false,Code.QUERY_ERROR,null,"获取失败！");
+                return new PublicResult(false, Code.QUERY_ERROR, null, "获取失败！");
             }
-        }catch (Exception e){
-            return new PublicResult(false,Code.QUERY_ERROR,ExceptUtil.getSimpleException(e),"出现了未知错误！");
+        } catch (Exception e) {
+            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "出现了未知错误！");
         }
     }
 
     @RequestMapping("/setLike")
-    public PublicResult setLike(@RequestBody DynamicIdVo dynamicIdVo){
+    public PublicResult setLike(@RequestBody DynamicIdVo dynamicIdVo) {
         try {
-            if(dynamicService.updateDynamicHits(dynamicIdVo.getId(),true)){
+            if (dynamicService.updateDynamicHits(dynamicIdVo.getId(), true)) {
                 Dynamic byId = dynamicService.getById(dynamicIdVo.getId());
                 User user = userService.selectById(byId.getUserId());
                 user.setPassword(null);
                 byId.setUser(user);
                 return new PublicResult(true, Code.UPDATE_OK, byId, "获取成功！");
             } else {
-                return new PublicResult(false,Code.QUERY_ERROR,null,"获取失败！");
+                return new PublicResult(false, Code.QUERY_ERROR, null, "获取失败！");
             }
-        }catch (Exception e){
-            return new PublicResult(false,Code.QUERY_ERROR,ExceptUtil.getSimpleException(e),"出现了未知错误！");
+        } catch (Exception e) {
+            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "出现了未知错误！");
         }
     }
 
