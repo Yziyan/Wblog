@@ -219,7 +219,7 @@ public class UserController {
     }
 
     // 修改头像
-    @RequestMapping("/fileUpload")
+    @RequestMapping("/photoImage")
     public PublicResult update(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request) {
 
         try {
@@ -230,12 +230,11 @@ public class UserController {
                 // 将信息
                 Map<String, Object> map = new HashMap<>();
                 UploadResult result = FileUpload.uploadImage(file, request, user.getPhoto());
-                map.put("fileName", result.getFileName());
-                map.put("filePath", result.getFilePath());
-                map.put("imagePath", result.getImagePath());
+                map.put("file", result);
                 // 将图片信息保存到数据库
                 user.setPhoto(result.getImagePath());
                 User resUser = userService.update(user);
+                resUser.setPassword(null);
                 map.put("user", resUser);
 
                 // 更新session
@@ -255,11 +254,18 @@ public class UserController {
     }
 
     @RequestMapping("u{id}")
-    public PublicResult admin(@PathVariable Integer id, HttpSession session) {
+    public PublicResult admin(@PathVariable Integer id, HttpServletRequest request) {
         try {
+
+            String appContext = request.getContextPath();
+            String basePath = request.getScheme() + "://"
+                    + request.getServerName() + ":"
+                    + request.getServerPort() + appContext + "/";
             // 查询此用户的信息、动态
             User user = userService.selectById(id);
-            List<Dynamic> dynamics = dynamicService.getByUserId(id);
+            user.setPhoto(basePath + user.getPhoto());
+            user.setBackground(basePath + user.getBackground());
+            List<Dynamic> dynamics = dynamicService.getByUserId(id, basePath);
 
             // 返回给客户端
             Map<String, Object> map = new HashMap<>();
@@ -269,5 +275,39 @@ public class UserController {
         } catch (Exception e) {
             return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "有一个未知的错误！");
         }
+    }
+    // 修改头像
+    @RequestMapping("/bagImage")
+    public PublicResult updateBackground(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request) {
+
+        try {
+            // 获取登录的user
+            User user = (User) request.getSession().getAttribute("user");
+
+            if (user != null) { // 登录过了 ，可以操作
+                // 将信息
+                Map<String, Object> map = new HashMap<>();
+                UploadResult result = FileUpload.uploadImage(file, request, user.getBackground());
+                map.put("file", result);
+                // 将图片信息保存到数据库
+                user.setBackground(result.getImagePath());
+                User resUser = userService.update(user);
+                resUser.setPassword(null);
+                map.put("user", resUser);
+
+                // 更新session
+                request.getSession().setAttribute("user", resUser);
+                // 将文件名和文件路径返回，进行响应
+                return new PublicResult(true, Code.UPLOAD_OK, map, "图片上传成功");
+
+            } else {
+                return new PublicResult(false, Code.UPLOAD_ERROR, null, "请登录");
+            }
+
+
+        } catch (Exception e) {
+            return new PublicResult(true, Code.UPLOAD_ERROR, ExceptUtil.getSimpleException(e), "图片上传失败");
+        }
+
     }
 }

@@ -88,12 +88,10 @@ public class DynamicController {
                 // 说明保存成功了。返回这条动态信息给前台
                 map.put("dynamic", resDynamic);
             }
-
-            Integer forwardDynamicId = resDynamic.getForwardDynamicId();
             String msg = "编辑成功"; // 返回消息
             if (id == null || id <= 0) {
                 msg = "转发成功";//
-                if (forwardDynamicId == 0 || forwardDynamicId == null) {
+                if (resDynamic.getForwardDynamicId() == 0) {
                     msg = "动态发布成功";
                 }
             }

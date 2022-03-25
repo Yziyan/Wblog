@@ -199,6 +199,16 @@ public class DynamicServiceImpl implements DynamicService {
 
     // 通过用户id查询所有动态
     @Override
+    public List<Dynamic> getByUserId(Integer userId, String reqUri) {
+        // 调用重载的方法
+        List<Dynamic> dynamics = getByUserId(userId);
+        for (Dynamic dynamic : dynamics) {
+            dynamic.setFilePath(getFilePath(dynamic, reqUri));
+        }
+        return dynamics;
+    }
+    // 通过用户id查询所有动态
+    @Override
     public List<Dynamic> getByUserId(Integer userId) {
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId).eq("enable", 1);

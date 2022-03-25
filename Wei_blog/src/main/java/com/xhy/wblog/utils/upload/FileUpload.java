@@ -30,8 +30,9 @@ public class FileUpload {
         // 用来接收返回值
         UploadResult result = new UploadResult();
         Map<String, Object> map = new HashMap<>();
-        if (file.isEmpty() || file.getSize() <= 0) { // 如果没有文件，返回原来的数据
-            String odlFileName = oldImage.substring(oldImage.lastIndexOf("/"));
+        if (file == null || file.getSize() <= 0) { // 如果没有文件，返回原来的数据
+
+            String odlFileName = oldImage != null ? oldImage.substring(oldImage.lastIndexOf("/")) : null;
             result.setFileName(odlFileName);
             result.setFilePath(userUrl + ctxPath + "/" + oldImage);
             result.setImagePath(oldImage);

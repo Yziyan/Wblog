@@ -48,5 +48,7 @@ public interface DynamicService {
     Dynamic getForwardDynamics(Dynamic dynamic,String url);
 
     // 通过用户id查询所有动态
+    List<Dynamic> getByUserId(Integer userId, String reqUri);
+
     List<Dynamic> getByUserId(Integer userId);
 }
