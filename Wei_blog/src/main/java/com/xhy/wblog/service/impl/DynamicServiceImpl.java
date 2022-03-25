@@ -146,27 +146,30 @@ public class DynamicServiceImpl implements DynamicService {
         return dynamics;
     }
 
+
+
     //获取转发嵌套
     public Dynamic getForwardDynamics(Dynamic dynamic, String url) {
         List<ForwardText> forwardTexts = new ArrayList<>();
         Dynamic temp = dynamic;
         Integer forwardDynamicId = temp.getForwardDynamicId();
+        Dynamic d = null;
         while (forwardDynamicId != 0) {
-            Dynamic d = dynamicDao.selectById(forwardDynamicId);
+            d = dynamicDao.selectById(forwardDynamicId);
             if (d != null) {
                 d.setFilePath(getFilePath(d, url));
                 User user1 = userDao.selectById(d.getUserId());
                 if (user1 != null) {
 //                    user1.setPassword(null);
 //                    d.setUser(user1);
-                    ForwardText forwardText = new ForwardText(user1.getProfileUrl(), user1.getName(), d.getText());
+                    ForwardText forwardText = new ForwardText(user1.getProfileUrl(), user1.getName(), d.getText(),d.getFilePath());
                     forwardTexts.add(forwardText);
                 }
-                temp.setForwardDynamic(d);
-                temp = temp.getForwardDynamic();
+                temp = d;
             }
             forwardDynamicId = temp.getForwardDynamicId();
         }
+        dynamic.setForwardDynamic(d);
         dynamic.setForwardTexts(forwardTexts);
         return dynamic;
     }
@@ -190,7 +193,7 @@ public class DynamicServiceImpl implements DynamicService {
         Dynamic dynamic = dynamicDao.selectById(id);
         if (setOrCan) {
             dynamic.setHits(dynamic.getHits() + 1);
-        } else {
+        } else if(dynamic.getHits()>0){
             dynamic.setHits(dynamic.getHits() - 1);
         }
         return dynamicDao.updateById(dynamic) > 0;
