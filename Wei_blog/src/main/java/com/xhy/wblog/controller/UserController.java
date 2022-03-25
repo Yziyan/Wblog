@@ -192,9 +192,9 @@ public class UserController {
 
     // 修改个人信息
     @RequestMapping("/update")
-    public PublicResult update(@RequestBody User bean, HttpSession session) {
+    public PublicResult update(@RequestBody User bean, HttpServletRequest request) {
         try {
-            User user = (User) session.getAttribute("user");
+            User user = (User) request.getSession().getAttribute("user");
 
             if (user != null) { // 说明登录过了的
                 // 将该用户的邮箱和id 还有原密码 放入传过来的 bean
@@ -205,7 +205,7 @@ public class UserController {
                 // 将整合好的参数更新到数据库,并且将用户最新的信息返回
                 User resUser = userService.update(bean);
                 // 更新session
-                session.setAttribute("user", resUser);
+                request.getSession().setAttribute("user", resUser);
                 return new PublicResult(true, Code.UPDATE_OK, resUser, "修改成功");
 
             } else {
@@ -235,6 +235,7 @@ public class UserController {
                 user.setPhoto(result.getImagePath());
                 User resUser = userService.update(user);
                 resUser.setPassword(null);
+                resUser.setPhoto(result.getFilePath());
                 map.put("user", resUser);
 
                 // 更新session
@@ -293,6 +294,7 @@ public class UserController {
                 user.setBackground(result.getImagePath());
                 User resUser = userService.update(user);
                 resUser.setPassword(null);
+                resUser.setBackground(result.getFilePath());
                 map.put("user", resUser);
 
                 // 更新session

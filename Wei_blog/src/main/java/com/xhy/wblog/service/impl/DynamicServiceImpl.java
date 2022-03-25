@@ -204,6 +204,7 @@ public class DynamicServiceImpl implements DynamicService {
         List<Dynamic> dynamics = getByUserId(userId);
         for (Dynamic dynamic : dynamics) {
             dynamic.setFilePath(getFilePath(dynamic, reqUri));
+            getForwardDynamics(dynamic, reqUri);
         }
         return dynamics;
     }
@@ -211,7 +212,7 @@ public class DynamicServiceImpl implements DynamicService {
     @Override
     public List<Dynamic> getByUserId(Integer userId) {
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", userId).eq("enable", 1);
+        queryWrapper.orderByDesc("created_time").eq("user_id", userId).eq("enable", 1);
         return dynamicDao.selectList(queryWrapper);
     }
 
