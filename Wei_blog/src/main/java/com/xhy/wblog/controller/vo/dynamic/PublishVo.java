@@ -25,5 +25,7 @@ public class PublishVo {
     private Integer UserId;
     // 文件数据
     private String fileVo;
+    // 标识数组
+    private Integer[] fileArray;
 
 }

@@ -16,7 +16,7 @@ public interface DynamicService {
 
     // 发布动态、编辑动态
     @Transactional(readOnly = false)
-    Dynamic save(PublishVo bean);
+    Dynamic save(PublishVo bean, String reqUri);
 
     // 通过id查询
     Dynamic getById(Integer id);

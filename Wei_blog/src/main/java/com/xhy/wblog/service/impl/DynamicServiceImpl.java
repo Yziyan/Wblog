@@ -34,7 +34,7 @@ public class DynamicServiceImpl implements DynamicService {
 
     // 动态发布、动态编辑、保存到数据库
     @Override
-    public Dynamic save(PublishVo bean) {
+    public Dynamic save(PublishVo bean, String reqUri) {
         // 将vo转换从保存到数据库的
         Dynamic dynamic = new Dynamic();
         dynamic.setText(bean.getText());
@@ -51,8 +51,10 @@ public class DynamicServiceImpl implements DynamicService {
         if (id == null || id <= 0) { // 说明是保存
             if (dynamicDao.insert(dynamic) > 0) {
                 resDynamic = dynamicDao.selectById(dynamic.getId());
+                resDynamic.setFilePath(getFilePath(resDynamic, reqUri));
                 // 给动态注入依赖的用户
                 resUser = userDao.selectById(bean.getUserId());
+                resUser.setPassword(null);
                 // 将用户的动态数量加1
                 Integer dynamicCount = resUser.getDynamicCount() + 1;
                 resUser.setDynamicCount(dynamicCount);
@@ -67,8 +69,10 @@ public class DynamicServiceImpl implements DynamicService {
             dynamic.setId(id);
             if (dynamicDao.updateById(dynamic) > 0) { // 编辑成功
                 resDynamic = dynamicDao.selectById(id);
+                resDynamic.setFilePath(getFilePath(resDynamic, reqUri));
                 // 给动态注入依赖的用户
                 resUser = userDao.selectById(bean.getUserId());
+                resUser.setPassword(null);
                 resDynamic.setUser(resUser);
                 return resDynamic;
             } else {
@@ -177,9 +181,10 @@ public class DynamicServiceImpl implements DynamicService {
     //文件路径
     public List<String> getFilePath(Dynamic dynamic, String url) {
         String file = dynamic.getFile();
-        if (file != null) {
+        if (!(file != null && file.length() == 0)) {
             String[] files = file.split(",");
             for (int i = 0; i < files.length; i++) {
+                if (!(files[i] != null && files[i].length() == 0))
                 files[i] = url + files[i];
             }
             return Arrays.asList(files);

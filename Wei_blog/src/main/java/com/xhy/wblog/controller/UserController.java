@@ -229,7 +229,8 @@ public class UserController {
             if (user != null) { // 登录过了 ，可以操作
                 // 将信息
                 Map<String, Object> map = new HashMap<>();
-                UploadResult result = FileUpload.uploadImage(file, request, user.getPhoto());
+                String oldFile = user.getPhoto().substring(user.getPhoto().lastIndexOf("upload/"));
+                UploadResult result = FileUpload.uploadImage(file, request, oldFile);
                 map.put("file", result);
                 // 将图片信息保存到数据库
                 user.setPhoto(result.getImagePath());
@@ -288,7 +289,8 @@ public class UserController {
             if (user != null) { // 登录过了 ，可以操作
                 // 将信息
                 Map<String, Object> map = new HashMap<>();
-                UploadResult result = FileUpload.uploadImage(file, request, user.getBackground());
+                String oldFile = user.getBackground().substring(user.getPhoto().lastIndexOf("upload/"));
+                UploadResult result = FileUpload.uploadImage(file, request, oldFile);
                 map.put("file", result);
                 // 将图片信息保存到数据库
                 user.setBackground(result.getImagePath());

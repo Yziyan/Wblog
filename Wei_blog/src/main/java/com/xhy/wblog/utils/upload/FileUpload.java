@@ -32,7 +32,7 @@ public class FileUpload {
         Map<String, Object> map = new HashMap<>();
         if (file == null || file.getSize() <= 0) { // 如果没有文件，返回原来的数据
 
-            String odlFileName = oldImage != null ? oldImage.substring(oldImage.lastIndexOf("/")) : null;
+            String odlFileName = oldImage != null ? oldImage.substring(oldImage.lastIndexOf("/") + 1) : null;
             result.setFileName(odlFileName);
             result.setFilePath(userUrl + ctxPath + "/" + oldImage);
             result.setImagePath(oldImage);

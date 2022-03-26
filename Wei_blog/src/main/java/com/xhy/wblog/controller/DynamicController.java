@@ -56,34 +56,53 @@ public class DynamicController {
             UploadResult result;
 
             if (files != null) { // 如果有图片，那么就遍历保存图片
-                // 将图片参数，放到list集合中，返回给前端
-                List<UploadResult> resFiles = new ArrayList<>();
                 for (MultipartFile file : files) {
-                    if (id == null || id <= 0) {
                         result = FileUpload.uploadImage(file, request, null);
-                    } else {
-                        // 如果是编辑，将以前的图片数据放这儿
-                        result = FileUpload.uploadImage(file, request, dynamicService.getById(id).getFile());
-
-                    }
-                    resFiles.add(result);
                     // 将图片地址拼接起来。 并且用 ，隔开放在数据库中
                     builder.append(result.getImagePath() + ",");
                 }
-                // 保存到map集合中
-                map.put("files", resFiles);
-                builder.replace(builder.length() - 1, builder.length(), " ");
+                builder.replace(builder.length() - 1, builder.length(), "");
             }
 
-            // 保存到数据库的图片，若是 “ ” 则变成null在传入。
-            String filePath = String.valueOf(builder);
-            if (filePath != null && filePath.length() == 0) filePath = null;
+
+
             // 将图片路径保存到数据库
-            publishVo.setFileVo(filePath);
+            if (id != null && id > 1) { // 说明是编辑操作
+                // 取出原先图片的索引
+                String oldFile = dynamicService.getById(id).getFile();
+                if (oldFile != null && oldFile.length() > 0) {
+                    String[] oldFileArray = oldFile.split(",");
+                    // 拿到前端传过来的索引
+                    Integer[] newFileArray = publishVo.getFileArray();
+                    for (int i = 0; i < oldFileArray.length; i++) {
+                        // 如果被删除了，那么就把
+                        if (newFileArray[i] == 1) {
+                            oldFileArray[i] = "";
+                        }
+                        if (builder != null && builder.length() == 0) {
+                            if (!(oldFileArray[i] != null && oldFileArray[i].length() == 0)) {
+                                builder.append(oldFileArray[i]);
+                            }
 
+                        } else {
+                            if (!(oldFileArray[i] != null && oldFileArray[i].length() == 0)) {
+                                builder.append("," + oldFileArray[i]);
+                            }
+                        }
+                    }
+                }
+
+            }
+
+
+            publishVo.setFileVo(String.valueOf(builder));
+
+            String appContext = request.getContextPath();
+            String basePath = request.getScheme() + "://"
+                    + request.getServerName() + ":"
+                    + request.getServerPort() + appContext + "/";
             // 传入数据保存。
-            Dynamic resDynamic = dynamicService.save(publishVo);
-
+            Dynamic resDynamic = dynamicService.save(publishVo, basePath);
             if (resDynamic != null) {
                 // 说明保存成功了。返回这条动态信息给前台
                 map.put("dynamic", resDynamic);
