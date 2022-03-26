@@ -181,7 +181,7 @@ public class DynamicServiceImpl implements DynamicService {
     //文件路径
     public List<String> getFilePath(Dynamic dynamic, String url) {
         String file = dynamic.getFile();
-        if (!(file != null && file.length() == 0)) {
+        if (!(file != null && file.length() == 0) && file != null) {
             String[] files = file.split(",");
             for (int i = 0; i < files.length; i++) {
                 if (!(files[i] != null && files[i].length() == 0))
