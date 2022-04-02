@@ -17,4 +17,7 @@ public interface FansService {
     boolean cancelSubscription(int userId,int otherId);
     //获取关注的人
     List<User> getBeSubscript(int userId);
+    //获取粉丝
+    List<User> getFans(int userId);
+
 }

@@ -242,4 +242,21 @@ public class DynamicController {
         }
     }
 
+    @RequestMapping("/getForwardMyDynamic")
+    public PublicResult getForwardMyDynamic(Integer userId,HttpServletRequest request){
+        try {
+//            String url = String.valueOf(request.getContextPath());
+            String appContext = request.getContextPath();
+            String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + appContext + "/";
+            List<Dynamic> myDynamic = dynamicService.getForwardMyDynamic(userId,basePath);
+            if (myDynamic != null) {
+                myDynamic.sort((o1, o2) -> o1.getCreatedTime().compareTo(o2.getCreatedTime()));
+                return new PublicResult(true, Code.QUERY_OK, myDynamic, "获取成功！");
+            } else {
+                return new PublicResult(false, Code.QUERY_ERROR, null, "获取失败！");
+            }
+        } catch (Exception e) {
+            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "出现了未知错误！");
+        }
+    }
 }

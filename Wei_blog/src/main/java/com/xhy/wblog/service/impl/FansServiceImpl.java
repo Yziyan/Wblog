@@ -71,4 +71,19 @@ public class FansServiceImpl implements FansService {
         }
         return ref;
     }
+
+    @Override
+    public List<User> getFans(int userId){
+        QueryWrapper<Fans> wrapper1 = new QueryWrapper<>();
+        wrapper1.eq("attention_user_id", userId);
+        List<Fans> fans = fansDao.selectList(wrapper1);//获取粉丝
+        List<User> ref = new ArrayList<>();
+        for (Fans f : fans) {
+            User user = userDao.selectById(f.getFansUserId());
+            user.setPassword(null);
+            ref.add(user);
+        }
+        return ref;
+    }
+
 }

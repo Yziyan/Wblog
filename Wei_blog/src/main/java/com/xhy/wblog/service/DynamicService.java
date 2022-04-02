@@ -6,6 +6,7 @@ import com.xhy.wblog.controller.vo.dynamic.PublishVo;
 import com.xhy.wblog.entity.Dynamic;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -51,4 +52,7 @@ public interface DynamicService {
     List<Dynamic> getByUserId(Integer userId, String reqUri);
 
     List<Dynamic> getByUserId(Integer userId);
+
+    //获取@我的微博的微博
+    List<Dynamic> getForwardMyDynamic(Integer userId,String url);
 }

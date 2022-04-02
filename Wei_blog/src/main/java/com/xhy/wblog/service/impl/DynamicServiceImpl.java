@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -31,6 +32,7 @@ public class DynamicServiceImpl implements DynamicService {
     //用来返回评论信息
     @Autowired
     private CommentService commentService;
+
 
     // 动态发布、动态编辑、保存到数据库
     @Override
@@ -150,6 +152,34 @@ public class DynamicServiceImpl implements DynamicService {
         return dynamics;
     }
 
+    //获取@我的微博的微博
+    @Override
+    public List<Dynamic> getForwardMyDynamic(Integer userId,String url){
+        QueryWrapper<Dynamic> Wrapper = new QueryWrapper<>();
+        Wrapper.orderByDesc("created_time").eq("enable", 1).eq("user_id",userId);
+        //PageHelper.startPage(1,3);
+        List<Dynamic> myDynamics = dynamicDao.selectList(Wrapper);
+        List<Dynamic> dynamics = new ArrayList<>();//返回所有自己的动态信息
+        for (Dynamic dynamic : myDynamics) {
+            Wrapper.clear();
+            int forwardId = dynamic.getId();
+            Wrapper.orderByDesc("created_time").eq("enable", 1)
+                    .eq("forward_dynamic_id",forwardId);
+            List<Dynamic> dynamic1 = dynamicDao.selectList(Wrapper);
+            dynamics.addAll(dynamic1);
+        }
+
+        for (Dynamic d : dynamics) {
+            d.setFilePath(getFilePath(d, url));
+            User user = userDao.selectById(d.getUserId());
+            if (user != null) {
+                user.setPassword(null);
+                d.setUser(user);
+            }
+            getForwardDynamics(d, url);
+        }
+        return dynamics;
+    }
 
 
     //获取转发嵌套

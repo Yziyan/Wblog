@@ -56,11 +56,22 @@ public class FansController {
         }
     }
 
-    //获取自己关注的人
+    //获取关注的人
     @RequestMapping("/getBeSubscript")
     public PublicResult getBeSubscript(@RequestBody FansVo fansVo) {
         try {
             List<User> beSubscript = fansService.getBeSubscript(fansVo.getUserId());
+            return new PublicResult(true, Code.QUERY_OK, beSubscript, "获取成功！");
+        } catch (Exception e) {
+            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "网络出现波动！请重新尝试");
+        }
+    }
+
+    //获取粉丝
+    @RequestMapping("/getFans")
+    public PublicResult getFans(@RequestBody FansVo fansVo) {
+        try {
+            List<User> beSubscript = fansService.getFans(fansVo.getUserId());
             return new PublicResult(true, Code.QUERY_OK, beSubscript, "获取成功！");
         } catch (Exception e) {
             return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "网络出现波动！请重新尝试");
