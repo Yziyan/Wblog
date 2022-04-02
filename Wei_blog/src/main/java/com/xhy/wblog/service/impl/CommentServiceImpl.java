@@ -1,7 +1,6 @@
 package com.xhy.wblog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.github.pagehelper.PageHelper;
 import com.xhy.wblog.controller.vo.comment.CommentListVo;
 import com.xhy.wblog.controller.vo.comment.PushCommentVo;
 import com.xhy.wblog.dao.CommentDao;
@@ -9,14 +8,13 @@ import com.xhy.wblog.dao.DynamicDao;
 import com.xhy.wblog.dao.UserDao;
 import com.xhy.wblog.entity.Comment;
 import com.xhy.wblog.entity.Dynamic;
+import com.xhy.wblog.entity.ReplyText;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @Service
@@ -48,13 +46,27 @@ public class CommentServiceImpl implements CommentService {
         return commentDao.selectById(dynamicId);
     }
 
+    private ReplyText getReplyText(Integer replyId) {
+        if (replyId == 0) return null;
+        // 返回的回复信息的类
+        ReplyText replyText = new ReplyText();
+        // 查出回复的那一条评论
+        Comment replyComment = commentDao.selectById(replyId);
+        User replyUser = userDao.selectById(replyComment.getUserId());
+        replyText.setText(replyComment.getText());
+        replyText.setName(replyUser.getName());
+        replyText.setProfileUrl(replyUser.getProfileUrl());
+        return replyText;
+    }
+
     // 保存评论、
     @Override
-    public Map<String, Object> save(PushCommentVo bean) {
+    public Comment save(PushCommentVo bean) {
 
-        // 拿到三者的id待会查数据
+        // 拿到四者的id待会查数据
         Integer replyId = bean.getReplyId();
         Integer dynamicId = bean.getDynamicId();
+        Integer floorID = bean.getFloorId();
         Integer userId = bean.getUserId();
         Comment comment = new Comment();
 
@@ -62,38 +74,30 @@ public class CommentServiceImpl implements CommentService {
         // 注入评论所需的 字段
         comment.setText(bean.getText());
         comment.setDynamicId(dynamicId);
-        comment.setUserId(userId);
         comment.setReplyId(replyId);
+        comment.setFloorId(floorID);
+        comment.setUserId(userId);
 
-        // 装返回的结果
-        Map<String, Object> map = new HashMap<>();
 
         if (commentDao.insert(comment) > 0) { // 保存评论成功
 
-            if (replyId != 0) { // 说明是回复
-                // 查出回复的那一条评论
-                Comment replyComment = commentDao.selectById(replyId);
-                User replyUser = userDao.selectById(replyComment.getUserId());
-                replyUser.setPassword(null);
-                replyComment.setUser(replyUser);
-                map.put("replyComment", replyComment);
-            }
+
             // 查出必须的，评论的是哪一条动态、是谁评论的
             Dynamic dynamic = dynamicDao.selectById(dynamicId);
             // 将评论数量+1
             updateCount(dynamicId, "增加");
-
-            dynamic.setUser(userDao.selectById(dynamic.getUserId()));
-            dynamic.getUser().setPassword(null);
 
             // 将这条评论的信息返回，并且注写这条评论的用户
             User user = userDao.selectById(userId);
             user.setPassword(null);
             comment = commentDao.selectById(comment.getId());
             comment.setUser(user);
-            map.put("comment", comment);
-            map.put("dynamic", dynamic);
-            return map;
+            if (replyId != 0) { // 说明是回复
+                // 注入回复所需的信息
+                comment.setReplyText(getReplyText(replyId));
+            }
+
+            return comment;
         } else {
             return null;
         }
@@ -109,8 +113,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public boolean removeById(Integer id) {
 
+
         Integer dynamicId = commentDao.selectById(id).getDynamicId();
-        if (commentDao.deleteById(id) > 0) { // 说明删除成功，还需要将动态的评论数减1
+        // 将改评论的设置成不可见
+        Comment comment = get(id);
+        comment.setEnable(0);
+        if (commentDao.updateById(comment) > 0) { // 说明删除成功，还需要将动态的评论数减1
             updateCount(dynamicId, "减少");
             return true;
         } else {
@@ -122,14 +130,18 @@ public class CommentServiceImpl implements CommentService {
     /**
      * 查询评论信息
      *
-     * @param commentId 动态的id
+     * @param listVo 动态的id和所在楼
      * @return 五条评论
      */
     @Override
-    public List<Comment> list(Integer commentId) {
+    public List<Comment> list(CommentListVo listVo) {
 
         QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("dynamic_id", commentId);
+            queryWrapper.eq("dynamic_id", listVo.getDynamicId())
+                    .eq("floor_id", listVo.getFloorId())
+                    .eq("enable", 1);
+
+
         List<Comment> comments = commentDao.selectList(queryWrapper);
         for (Comment comment : comments) {
             // 注入评论的用户，并且设置密码为null
@@ -137,6 +149,9 @@ public class CommentServiceImpl implements CommentService {
             User user = userDao.selectById(userId);
             user.setPassword(null);
             comment.setUser(user);
+
+            // 若是回复的，那么注入ReplyText
+            comment.setReplyText(getReplyText(comment.getReplyId()));
         }
         return comments;
     }
@@ -179,6 +194,20 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Integer getHits(Integer commentId) {
         return commentDao.selectById(commentId).getHits();
+    }
+
+    /**
+     *
+     * @param dynamicId ： 动态的id
+     * @return 是否成功
+     */
+    @Override
+    public boolean removeAll(Integer dynamicId) {
+        // 删除动态，顺带删除所有的评论
+        QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("dynamic_id", dynamicId);
+        return commentDao.delete(queryWrapper) > 0;
+
     }
 
 }

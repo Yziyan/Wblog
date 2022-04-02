@@ -23,5 +23,7 @@ public class PushCommentVo {
     private Integer dynamicId;
     // 用户id
     private Integer userId;
+    // 楼层id
+    private Integer floorId;
 
 }

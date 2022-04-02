@@ -14,7 +14,7 @@ import lombok.ToString;
 public class CommentListVo {
 
     // 请求的次数
-    private Integer reqCount;
+    private Integer floorId;
     // 评论的动态id
     private Integer dynamicId;
 

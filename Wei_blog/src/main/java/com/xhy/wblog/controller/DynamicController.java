@@ -132,6 +132,8 @@ public class DynamicController {
     public PublicResult remove(@RequestBody DynamicIdVo removeVo) {
         try {
             if (dynamicService.removeById(removeVo.getId())) {
+                // 删除该动态的所有评论
+                commentService.removeAll(removeVo.getId());
                 return new PublicResult(true, Code.DELETE_OK, null, "删除成功");
             } else {
                 return new PublicResult(false, Code.DELETE_ERROR, null, "删除失败！");

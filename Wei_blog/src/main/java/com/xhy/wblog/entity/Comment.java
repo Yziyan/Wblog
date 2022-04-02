@@ -56,12 +56,25 @@ public class Comment implements Serializable {
      */
     private Integer replyId;
 
+    // 返回的回复的信息
+    @TableField(exist = false)
+    private ReplyText replyText;
+
     /**
      *  发表评论的用户
      *  表示此属性不映射到数据库
      */
     @TableField(exist = false)
     private User user;
+
+    /**
+     *  楼层Id
+     */
+    private Integer floorId;
+    /**
+     *  是否可见
+     */
+    private Integer enable;
 
 
 

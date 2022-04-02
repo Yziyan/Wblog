@@ -19,13 +19,13 @@ public interface CommentService {
 
     // 保存评论、
     @Transactional(readOnly = false)
-    Map<String, Object> save(PushCommentVo bean);
+    Comment save(PushCommentVo bean);
 
     // 删除评论
     @Transactional(readOnly = false)
     boolean removeById(Integer id);
     // 查询评论
-    List<Comment> list(Integer commentId);
+    List<Comment> list(CommentListVo listVo);
 
     // 通过id查询评论
     Comment get(Integer id);
@@ -36,4 +36,8 @@ public interface CommentService {
 
     // 获取当前评论的点赞数
     Integer getHits(Integer commentId);
+
+    // 根据动态id， 删除改的所有评论
+    @Transactional(readOnly = false)
+    boolean removeAll(Integer dynamicId);
 }
