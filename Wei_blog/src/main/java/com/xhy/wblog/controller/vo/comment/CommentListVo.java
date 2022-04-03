@@ -17,5 +17,7 @@ public class CommentListVo {
     private Integer floorId;
     // 评论的动态id
     private Integer dynamicId;
+    // url
+    private String reqUrl;
 
 }

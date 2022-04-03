@@ -14,6 +14,7 @@ import com.xhy.wblog.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -143,13 +144,18 @@ public class CommentServiceImpl implements CommentService {
 
 
         List<Comment> comments = commentDao.selectList(queryWrapper);
+        List<User> users = new ArrayList<>();
+        for (int i = 0; i < comments.size(); i++) {
+            
+        }
         for (Comment comment : comments) {
             // 注入评论的用户，并且设置密码为null
             Integer userId = comment.getUserId();
-            User user = userDao.selectById(userId);
+            User user = userDao.getUser(userId);
             user.setPassword(null);
+            String photo = listVo.getReqUrl() + user.getPhoto();
+            user.setPhoto(photo);
             comment.setUser(user);
-
             // 若是回复的，那么注入ReplyText
             comment.setReplyText(getReplyText(comment.getReplyId()));
         }

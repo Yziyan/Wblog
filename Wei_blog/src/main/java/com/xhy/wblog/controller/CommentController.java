@@ -10,6 +10,7 @@ import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.CommentService;
 import com.xhy.wblog.service.DynamicService;
 import com.xhy.wblog.service.UserService;
+import com.xhy.wblog.utils.converter.ReqUrlStr;
 import com.xhy.wblog.utils.exception.ExceptUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -93,8 +94,10 @@ public class CommentController {
 
     // 查看评论
     @RequestMapping("list")
-    public PublicResult list(@RequestBody CommentListVo listVo) {
+    public PublicResult list(@RequestBody CommentListVo listVo, HttpServletRequest request) {
         try {
+            // 将url传入
+            listVo.setReqUrl(ReqUrlStr.getUrl(request));
             List<Comment> comments = commentService.list(listVo);
             if (comments.size() > 0) {
                 //  若有评论，则返回评论
