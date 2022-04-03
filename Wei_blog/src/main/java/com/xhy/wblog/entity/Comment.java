@@ -75,7 +75,11 @@ public class Comment implements Serializable {
      *  是否可见
      */
     private Integer enable;
-
+    /**
+     *  二级评论的条数
+     */
+    @TableField(exist = false)
+    private Long replyCount;
 
 
 }

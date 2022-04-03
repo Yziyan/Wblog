@@ -138,6 +138,7 @@ public class CommentServiceImpl implements CommentService {
     public List<Comment> list(CommentListVo listVo) {
 
         QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
+
             queryWrapper.eq("dynamic_id", listVo.getDynamicId())
                     .eq("floor_id", listVo.getFloorId())
                     .eq("enable", 1);
@@ -158,6 +159,13 @@ public class CommentServiceImpl implements CommentService {
             comment.setUser(user);
             // 若是回复的，那么注入ReplyText
             comment.setReplyText(getReplyText(comment.getReplyId()));
+            // 若是一级评论。那么返回评论数
+            if (comment.getReplyId() == 0) {
+                QueryWrapper<Comment> wrapperCount = new QueryWrapper();
+                wrapperCount.eq("floor_id", comment.getId());
+                Long replyCount = commentDao.selectCount(wrapperCount);
+                comment.setReplyCount(replyCount);
+            }
         }
         return comments;
     }
