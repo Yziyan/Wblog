@@ -1,6 +1,8 @@
 package com.xhy.wblog.test;
 
 
+import com.xhy.wblog.dao.UserDao;
+import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.DynamicService;
 import com.xhy.wblog.service.UserService;
 import org.junit.Test;
@@ -19,13 +21,22 @@ public class UserServiceTest {
     @Autowired
     private UserService service;
 
+    @Autowired
+    private UserDao userDao;
+
 
     @Autowired
     private DynamicService dynamicService;
 
     @Test
     public void test(){
-        System.out.println(dynamicService.getCount());
+
+        for(int i = 0;i<3;i++){
+            User user = userDao.getUser(4);
+            user.setPhoto("hello");
+            System.out.println(user.getPhoto());
+        }
+
     }
 
 

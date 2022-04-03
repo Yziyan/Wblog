@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.xhy.wblog.controller.vo.dynamic.PublishVo;
 import com.xhy.wblog.dao.DynamicDao;
+import com.xhy.wblog.dao.TopicDao;
 import com.xhy.wblog.dao.UserDao;
 import com.xhy.wblog.entity.Dynamic;
 import com.xhy.wblog.entity.ForwardText;
+import com.xhy.wblog.entity.Topic;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.CommentService;
 import com.xhy.wblog.service.DynamicService;
@@ -32,7 +34,9 @@ public class DynamicServiceImpl implements DynamicService {
     //用来返回评论信息
     @Autowired
     private CommentService commentService;
-
+    //用来获取话题
+    @Autowired
+    private TopicDao topicDao;
 
     // 动态发布、动态编辑、保存到数据库
     @Override
@@ -108,7 +112,6 @@ public class DynamicServiceImpl implements DynamicService {
 //        return dynamicDao.selectPage(dynamicPage,DynamicQueryWrapper);
 //    }
 
-
     //分页查询
     @Override
     public List<Dynamic> findAllPage(Integer pageNum, Integer pageSize) {
@@ -125,12 +128,12 @@ public class DynamicServiceImpl implements DynamicService {
     }
 
     @Override
-    public List<Dynamic> getHot() {
-        QueryWrapper<Dynamic> Wrapper = new QueryWrapper<>();
-        Wrapper.orderByDesc("hits").eq("enable", 1);
+    public List<Topic> getHot() {
+        QueryWrapper<Topic> Wrapper = new QueryWrapper<>();
+        Wrapper.orderByDesc("query_count");
         PageHelper.startPage(1, 10);
-        return dynamicDao.selectList(Wrapper);
-
+        List<Topic> topics = topicDao.selectList(Wrapper);
+        return topics;
     }
 
     //获取最新动态
@@ -142,9 +145,12 @@ public class DynamicServiceImpl implements DynamicService {
         List<Dynamic> dynamics = dynamicDao.selectList(Wrapper);//返回所有信息
         for (Dynamic d : dynamics) {
             d.setFilePath(getFilePath(d, url));
-            User user = userDao.selectById(d.getUserId());
+            User user = userDao.getUser(d.getUserId());
             if (user != null) {
                 user.setPassword(null);
+                String photo = user.getPhoto();
+                photo =url+photo;
+                user.setPhoto(photo);
                 d.setUser(user);
             }
             getForwardDynamics(d, url);
@@ -160,7 +166,7 @@ public class DynamicServiceImpl implements DynamicService {
         //PageHelper.startPage(1,3);
         List<Dynamic> myDynamics = dynamicDao.selectList(Wrapper);
         List<Dynamic> dynamics = new ArrayList<>();//返回所有自己的动态信息
-        for (Dynamic dynamic : myDynamics) {
+        for (Dynamic dynamic : myDynamics) {//根据自己动态被别人转发的id，获取转发我的动态的动态
             Wrapper.clear();
             int forwardId = dynamic.getId();
             Wrapper.orderByDesc("created_time").eq("enable", 1)
@@ -169,18 +175,21 @@ public class DynamicServiceImpl implements DynamicService {
             dynamics.addAll(dynamic1);
         }
 
-        for (Dynamic d : dynamics) {
+        for (Dynamic d : dynamics) {//设置发动态的用户信息
             d.setFilePath(getFilePath(d, url));
-            User user = userDao.selectById(d.getUserId());
+            User user = userDao.getUser(d.getUserId());
             if (user != null) {
                 user.setPassword(null);
+                String photo = user.getPhoto();
+                photo =url+photo;
+                user.setPhoto(photo);
                 d.setUser(user);
             }
             getForwardDynamics(d, url);
         }
+
         return dynamics;
     }
-
 
     //获取转发嵌套
     public Dynamic getForwardDynamics(Dynamic dynamic, String url) {
@@ -233,7 +242,6 @@ public class DynamicServiceImpl implements DynamicService {
         }
         return dynamicDao.updateById(dynamic) > 0;
     }
-
 
     // 通过用户id查询所有动态
     @Override

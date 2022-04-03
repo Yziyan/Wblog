@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhy.wblog.controller.vo.dynamic.PublishVo;
 import com.xhy.wblog.entity.Dynamic;
+import com.xhy.wblog.entity.Topic;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
@@ -35,7 +36,7 @@ public interface DynamicService {
     long getCount();
 
     //根据点赞数获取最新动态
-    List<Dynamic> getHot();
+    List<Topic> getHot();
 
     //根据时间获取最新动态
     List<Dynamic> getNew(String url);

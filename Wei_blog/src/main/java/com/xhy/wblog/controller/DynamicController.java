@@ -6,6 +6,7 @@ import com.xhy.wblog.controller.result.PublicResult;
 import com.xhy.wblog.controller.vo.dynamic.PublishVo;
 import com.xhy.wblog.controller.vo.dynamic.DynamicIdVo;
 import com.xhy.wblog.entity.Dynamic;
+import com.xhy.wblog.entity.Topic;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.CommentService;
 import com.xhy.wblog.service.DynamicService;
@@ -192,11 +193,11 @@ public class DynamicController {
         }
     }
 
-    //获取最火的动态（最高的点赞数量）
+    //获取最火的动态（最高的搜索数量）
     @RequestMapping("/getHotDynamic")
     public PublicResult getHotDynamic() {
         try {
-            List<Dynamic> hotDynamic = dynamicService.getHot();
+            List<Topic> hotDynamic = dynamicService.getHot();
             if (hotDynamic != null) {
                 return new PublicResult(true, Code.QUERY_OK, hotDynamic, "获取成功！");
             } else {
@@ -244,9 +245,7 @@ public class DynamicController {
     @RequestMapping("/getForwardMyDynamic")
     public PublicResult getForwardMyDynamic(Integer userId,HttpServletRequest request){
         try {
-//            String url = String.valueOf(request.getContextPath());
-            String appContext = request.getContextPath();
-            String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + appContext + "/";
+            String basePath = ReqUrlStr.getUrl(request);
             List<Dynamic> myDynamic = dynamicService.getForwardMyDynamic(userId,basePath);
             if (myDynamic != null) {
                 myDynamic.sort((o1, o2) -> o1.getCreatedTime().compareTo(o2.getCreatedTime()));
