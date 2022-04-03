@@ -56,4 +56,7 @@ public interface DynamicService {
 
     //获取@我的微博的微博
     List<Dynamic> getForwardMyDynamic(Integer userId,String url);
+
+    // 通过theme查询
+    List<Dynamic> listByTheme(String theme, String reqUrl);
 }

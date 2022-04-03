@@ -13,6 +13,7 @@ import com.xhy.wblog.entity.Topic;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.CommentService;
 import com.xhy.wblog.service.DynamicService;
+import com.xhy.wblog.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,12 +38,51 @@ public class DynamicServiceImpl implements DynamicService {
     //用来获取话题
     @Autowired
     private TopicDao topicDao;
+    //用来返回话题
+    @Autowired
+    private TopicService topicService;
+
+
+    // 用于切割文本信息的话题
+    public String getTopicStr(String content) {
+
+        List<Integer> indexStr = new ArrayList<>();
+        int first = content.indexOf("#");
+        while (first != -1) {
+            indexStr.add(first);
+            first = content.indexOf("#", first + 1);
+        }
+        StringBuilder res = new StringBuilder();
+        if (indexStr.size() >= 2) {
+            int index = 0;
+            while (index < indexStr.size() - 1) {
+                if (indexStr.get(index + 1) - indexStr.get(index) == 1) {
+                    index++;
+                } else {
+                    String objStr = content.substring(indexStr.get(index), indexStr.get(++index) + 1);
+                    res.append(objStr).append(",");
+                    index += 2;
+                }
+            }
+            if (res.length() > 1) res.replace(res.length() - 1, res.length(), "");
+            String result = String.valueOf(res);
+            return result.equals("") ? null : result;
+        } else {
+            return null;
+        }
+
+    }
 
     // 动态发布、动态编辑、保存到数据库
     @Override
     public Dynamic save(PublishVo bean, String reqUri) {
+        // 拿到切割好的话题
+        String topicStr = getTopicStr(bean.getText());
+        // 将这个保存到话题表
+        topicService.save(topicStr);
         // 将vo转换从保存到数据库的
         Dynamic dynamic = new Dynamic();
+        dynamic.setTheme(topicStr);
         dynamic.setText(bean.getText());
         dynamic.setFile(bean.getFileVo());
         dynamic.setVisible(bean.getVisible());
@@ -105,12 +145,6 @@ public class DynamicServiceImpl implements DynamicService {
         return dynamicDao.updateById(dynamic) > 0;
     }
 
-//    @Override
-//    public Page<Dynamic> getNewDynamic(int countnum, int nums) {
-//        QueryWrapper<Dynamic> DynamicQueryWrapper = new QueryWrapper<>();
-//        Page<Dynamic> dynamicPage = new Page<>(countnum, nums);
-//        return dynamicDao.selectPage(dynamicPage,DynamicQueryWrapper);
-//    }
 
     //分页查询
     @Override
@@ -160,9 +194,9 @@ public class DynamicServiceImpl implements DynamicService {
 
     //获取@我的微博的微博
     @Override
-    public List<Dynamic> getForwardMyDynamic(Integer userId,String url){
+    public List<Dynamic> getForwardMyDynamic(Integer userId, String url) {
         QueryWrapper<Dynamic> Wrapper = new QueryWrapper<>();
-        Wrapper.orderByDesc("created_time").eq("enable", 1).eq("user_id",userId);
+        Wrapper.orderByDesc("created_time").eq("enable", 1).eq("user_id", userId);
         //PageHelper.startPage(1,3);
         List<Dynamic> myDynamics = dynamicDao.selectList(Wrapper);
         List<Dynamic> dynamics = new ArrayList<>();//返回所有自己的动态信息
@@ -170,7 +204,7 @@ public class DynamicServiceImpl implements DynamicService {
             Wrapper.clear();
             int forwardId = dynamic.getId();
             Wrapper.orderByDesc("created_time").eq("enable", 1)
-                    .eq("forward_dynamic_id",forwardId);
+                    .eq("forward_dynamic_id", forwardId);
             List<Dynamic> dynamic1 = dynamicDao.selectList(Wrapper);
             dynamics.addAll(dynamic1);
         }
@@ -191,6 +225,7 @@ public class DynamicServiceImpl implements DynamicService {
         return dynamics;
     }
 
+
     //获取转发嵌套
     public Dynamic getForwardDynamics(Dynamic dynamic, String url) {
         List<ForwardText> forwardTexts = new ArrayList<>();
@@ -205,7 +240,7 @@ public class DynamicServiceImpl implements DynamicService {
                 if (user1 != null) {
 //                    user1.setPassword(null);
 //                    d.setUser(user1);
-                    ForwardText forwardText = new ForwardText(user1.getProfileUrl(), user1.getName(), d.getText(),d.getFilePath());
+                    ForwardText forwardText = new ForwardText(user1.getProfileUrl(), user1.getName(), d.getText(), d.getFilePath());
                     forwardTexts.add(forwardText);
                 }
                 temp = d;
@@ -224,7 +259,7 @@ public class DynamicServiceImpl implements DynamicService {
             String[] files = file.split(",");
             for (int i = 0; i < files.length; i++) {
                 if (!(files[i] != null && files[i].length() == 0))
-                files[i] = url + files[i];
+                    files[i] = url + files[i];
             }
             return Arrays.asList(files);
         }
@@ -237,11 +272,12 @@ public class DynamicServiceImpl implements DynamicService {
         Dynamic dynamic = dynamicDao.selectById(id);
         if (setOrCan) {
             dynamic.setHits(dynamic.getHits() + 1);
-        } else if(dynamic.getHits()>0){
+        } else if (dynamic.getHits() > 0) {
             dynamic.setHits(dynamic.getHits() - 1);
         }
         return dynamicDao.updateById(dynamic) > 0;
     }
+
 
     // 通过用户id查询所有动态
     @Override
@@ -254,12 +290,43 @@ public class DynamicServiceImpl implements DynamicService {
         }
         return dynamics;
     }
+
     // 通过用户id查询所有动态
     @Override
     public List<Dynamic> getByUserId(Integer userId) {
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("created_time").eq("user_id", userId).eq("enable", 1);
         return dynamicDao.selectList(queryWrapper);
+    }
+
+    /**
+     * 通过theme查询
+     *
+     * @param theme ：话题
+     * @return 所有带这个话题的动态
+     */
+    @Override
+    public List<Dynamic> listByTheme(String theme, String reqUrl) {
+        QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
+        // 模糊查询，并且按点赞数降序返回
+        queryWrapper.like("theme", theme).
+                orderByDesc("hits").
+                eq("enable", 1);
+        List<Dynamic> dynamics = dynamicDao.selectList(queryWrapper);
+        for (Dynamic dynamic : dynamics) {
+            // 注入user
+            Integer userId = dynamic.getUserId();
+            User user = userDao.getUser(userId);
+            user.setPassword(null);
+            String photo = reqUrl + user.getPhoto();
+            user.setPhoto(photo);
+            dynamic.setUser(user);
+            // 若是转发的。那就注入转发的信息
+            getForwardDynamics(dynamic, reqUrl);
+            // 若有文件，那么返回filePath
+            dynamic.setFilePath(getFilePath(dynamic, reqUrl));
+        }
+        return dynamics;
     }
 
 }

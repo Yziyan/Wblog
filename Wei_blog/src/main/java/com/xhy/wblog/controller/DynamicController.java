@@ -257,4 +257,20 @@ public class DynamicController {
             return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "出现了未知错误！");
         }
     }
+
+    // 按话题搜索
+    @RequestMapping("/queryTopic")
+    public PublicResult listTopic(String topic, HttpServletRequest request) {
+        try {
+
+            List<Dynamic> topicDynamic = dynamicService.listByTheme(topic, ReqUrlStr.getUrl(request));
+            if (topicDynamic.size() > 0) {
+                return new PublicResult(true, Code.QUERY_OK, topicDynamic, "获取成功！");
+            } else {
+                return new PublicResult(false, Code.QUERY_OK, null, "该话题还没有动态呕！");
+            }
+        } catch (Exception e) {
+            return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "出现了未知错误！");
+        }
+    }
 }

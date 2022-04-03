@@ -11,7 +11,10 @@ import lombok.ToString;
 @NoArgsConstructor     // 生成空构造方法
 @ToString
 public class ReplyText {
+    // 用户首页
     private String profileUrl;
+    // 用户姓名
     private String name;
+    // 一级评论的文本
     private String text;
 }

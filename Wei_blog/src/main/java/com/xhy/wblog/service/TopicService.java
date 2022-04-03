@@ -1,5 +1,6 @@
 package com.xhy.wblog.service;
 
+import com.xhy.wblog.entity.Topic;
 import com.xhy.wblog.entity.User;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,5 +11,10 @@ import java.util.List;
 public interface TopicService {
 
 
+    // 保存话题
+    @Transactional(readOnly = false)
+    boolean save(String topicStr);
 
+    // 通过主题搜索话题
+    Topic getByTheme(String theme);
 }

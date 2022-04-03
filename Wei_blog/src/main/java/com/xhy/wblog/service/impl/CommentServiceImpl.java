@@ -11,6 +11,7 @@ import com.xhy.wblog.entity.Dynamic;
 import com.xhy.wblog.entity.ReplyText;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.CommentService;
+import com.xhy.wblog.utils.converter.ReqUrlStr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -143,12 +144,9 @@ public class CommentServiceImpl implements CommentService {
                     .eq("floor_id", listVo.getFloorId())
                     .eq("enable", 1);
 
-
         List<Comment> comments = commentDao.selectList(queryWrapper);
-        List<User> users = new ArrayList<>();
-        for (int i = 0; i < comments.size(); i++) {
-            
-        }
+
+        // 将评论注入用户信息
         for (Comment comment : comments) {
             // 注入评论的用户，并且设置密码为null
             Integer userId = comment.getUserId();

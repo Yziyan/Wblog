@@ -88,7 +88,7 @@ public class CommentController {
             }
         } catch (Exception e) {
             return new PublicResult(false, Code.DELETE_ERROR,
-                    ExceptUtil.getSimpleException(e), "删除失败");
+                    ExceptUtil.getSimpleException(e), "出现了未知错误!");
         }
     }
 
