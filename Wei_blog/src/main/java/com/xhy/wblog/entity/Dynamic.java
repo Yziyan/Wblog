@@ -79,8 +79,16 @@ public class Dynamic implements Serializable {
      * 发布动态用户的id
      */
     private Integer userId;
-
+    /**
+     *
+     *  是否可见
+     */
     private Integer enable;
+    /**
+     *
+     *  话题
+     */
+    private String theme;
 
     /**
      *  发布动态的用户
