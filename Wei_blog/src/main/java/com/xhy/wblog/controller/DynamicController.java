@@ -10,6 +10,7 @@ import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.CommentService;
 import com.xhy.wblog.service.DynamicService;
 import com.xhy.wblog.service.UserService;
+import com.xhy.wblog.utils.converter.ReqUrlStr;
 import com.xhy.wblog.utils.exception.ExceptUtil;
 import com.xhy.wblog.utils.upload.FileUpload;
 import com.xhy.wblog.utils.upload.UploadResult;
@@ -179,9 +180,7 @@ public class DynamicController {
     @RequestMapping("/getNewDynamic")
     public PublicResult getNewDynamic(HttpServletRequest request) {
         try {
-//            String url = String.valueOf(request.getContextPath());
-            String appContext = request.getContextPath();
-            String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + appContext + "/";
+            String basePath = ReqUrlStr.getUrl(request);
             List<Dynamic> newDynamic = dynamicService.getNew(basePath);
             if (newDynamic != null) {
                 return new PublicResult(true, Code.QUERY_OK, newDynamic, "获取成功！");

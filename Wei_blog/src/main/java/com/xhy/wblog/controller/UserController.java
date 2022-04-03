@@ -11,6 +11,7 @@ import com.xhy.wblog.entity.Dynamic;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.DynamicService;
 import com.xhy.wblog.service.UserService;
+import com.xhy.wblog.utils.converter.ReqUrlStr;
 import com.xhy.wblog.utils.exception.ExceptUtil;
 import com.xhy.wblog.utils.sendemail.EmaiUtils;
 import com.xhy.wblog.utils.upload.FileUpload;
@@ -259,10 +260,7 @@ public class UserController {
     public PublicResult admin(@PathVariable Integer id, HttpServletRequest request) {
         try {
 
-            String appContext = request.getContextPath();
-            String basePath = request.getScheme() + "://"
-                    + request.getServerName() + ":"
-                    + request.getServerPort() + appContext + "/";
+            String basePath = ReqUrlStr.getUrl(request);
             // 查询此用户的信息、动态
             User user = userService.selectById(id);
             user.setPhoto(basePath + user.getPhoto());
