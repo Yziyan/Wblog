@@ -119,7 +119,7 @@ public class User implements Serializable {
      */
     private String background;
 
-
-
+    @TableField(exist = false)
+    private Boolean isSubscript;
 }
 

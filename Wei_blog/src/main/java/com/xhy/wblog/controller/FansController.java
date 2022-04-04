@@ -8,12 +8,14 @@ import com.xhy.wblog.controller.vo.users.UserVo;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.FansService;
 import com.xhy.wblog.service.UserService;
+import com.xhy.wblog.utils.converter.ReqUrlStr;
 import com.xhy.wblog.utils.exception.ExceptUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -58,9 +60,10 @@ public class FansController {
 
     //获取关注的人
     @RequestMapping("/getBeSubscript")
-    public PublicResult getBeSubscript(@RequestBody FansVo fansVo) {
+    public PublicResult getBeSubscript(@RequestBody FansVo fansVo, HttpServletRequest request) {
         try {
-            List<User> beSubscript = fansService.getBeSubscript(fansVo.getUserId());
+            String basePath = ReqUrlStr.getUrl(request);
+            List<User> beSubscript = fansService.getBeSubscript(fansVo,basePath);
             return new PublicResult(true, Code.QUERY_OK, beSubscript, "获取成功！");
         } catch (Exception e) {
             return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "网络出现波动！请重新尝试");
@@ -69,9 +72,10 @@ public class FansController {
 
     //获取粉丝
     @RequestMapping("/getFans")
-    public PublicResult getFans(@RequestBody FansVo fansVo) {
+    public PublicResult getFans(@RequestBody FansVo fansVo, HttpServletRequest request) {
         try {
-            List<User> beSubscript = fansService.getFans(fansVo.getUserId());
+            String basePath = ReqUrlStr.getUrl(request);
+            List<User> beSubscript = fansService.getFans(fansVo,basePath);
             return new PublicResult(true, Code.QUERY_OK, beSubscript, "获取成功！");
         } catch (Exception e) {
             return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "网络出现波动！请重新尝试");

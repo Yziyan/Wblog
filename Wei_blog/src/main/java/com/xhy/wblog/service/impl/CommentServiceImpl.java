@@ -142,7 +142,7 @@ public class CommentServiceImpl implements CommentService {
 
             queryWrapper.eq("dynamic_id", listVo.getDynamicId())
                     .eq("floor_id", listVo.getFloorId())
-                    .eq("enable", 1);
+                    .eq("enable", 1).orderByDesc("created_time");
 
         List<Comment> comments = commentDao.selectList(queryWrapper);
 

@@ -1,5 +1,6 @@
 package com.xhy.wblog.service;
 
+import com.xhy.wblog.controller.vo.fans.FansVo;
 import com.xhy.wblog.entity.Fans;
 import com.xhy.wblog.entity.User;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +17,8 @@ public interface FansService {
     @Transactional(readOnly = false)
     boolean cancelSubscription(int userId,int otherId);
     //获取关注的人
-    List<User> getBeSubscript(int userId);
+    List<User> getBeSubscript(FansVo fansVo, String url);
     //获取粉丝
-    List<User> getFans(int userId);
+    List<User> getFans(FansVo fansVo,String url);
 
 }

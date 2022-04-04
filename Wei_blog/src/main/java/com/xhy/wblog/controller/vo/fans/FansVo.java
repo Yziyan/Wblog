@@ -16,4 +16,6 @@ public class FansVo {
 
     private int otherId;
 
+    private int lookId;
+
 }
