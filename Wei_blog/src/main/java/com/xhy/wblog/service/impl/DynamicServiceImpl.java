@@ -46,6 +46,7 @@ public class DynamicServiceImpl implements DynamicService {
     // 用于切割文本信息的话题
     public String getTopicStr(String content) {
 
+        // #assassin####sadsa####
         List<Integer> indexStr = new ArrayList<>();
         int first = content.indexOf("#");
         while (first != -1) {

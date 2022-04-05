@@ -174,12 +174,12 @@ public class UserController {
             if (!captcha.equals(code)) { // 验证码，错误
                 return new PublicResult(false, Code.REGISTER_ERROR, null, "验证码错误");
             } else { // 验证码正确
-                String url = String.valueOf(request.getRequestURL());
+                String uri = request.getRequestURI();
                 // http://localhost:8080/wblog/users   将这个传入service
-                String userUrl = url.substring(0, url.lastIndexOf("/")) + "/u";
+                String userUrl = uri.substring(0, uri.lastIndexOf("/")) + "/u";
                 registerVo.setProfileUrl(userUrl);
-                Map<String, Object> map = userService.register(registerVo);
-
+                // Map<String, Object> map = userService.register(registerVo);
+                Map<String, Object> map = new HashMap<>();
                 if ((boolean) map.get("flag")) {
                     return new PublicResult(true, Code.REGISTER_OK, null, (String) map.get("msg"));
                 }
@@ -230,8 +230,14 @@ public class UserController {
             if (user != null) { // 登录过了 ，可以操作
                 // 将信息
                 Map<String, Object> map = new HashMap<>();
-                String oldFile = user.getPhoto().substring(user.getPhoto().lastIndexOf("upload/"));
-                UploadResult result = FileUpload.uploadImage(file, request, oldFile);
+                String oldPhoto = user.getPhoto();
+                UploadResult result;
+                if (oldPhoto != null && oldPhoto.length() > 0) { // 说明以前有头像,才需要把以前的头像传进去
+                    String oldFile = oldPhoto.substring(user.getPhoto().lastIndexOf("upload/"));
+                    result = FileUpload.uploadImage(file, request, oldFile);
+                } else { // 以前没有头像，不需要传以前的地址
+                    result = FileUpload.uploadImage(file, request, null);
+                }
                 map.put("file", result);
                 // 将图片信息保存到数据库
                 user.setPhoto(result.getImagePath());
@@ -285,10 +291,16 @@ public class UserController {
             User user = (User) request.getSession().getAttribute("user");
 
             if (user != null) { // 登录过了 ，可以操作
-                // 将信息
+                // 将信息放入map中
                 Map<String, Object> map = new HashMap<>();
-                String oldFile = user.getBackground().substring(user.getPhoto().lastIndexOf("upload/"));
-                UploadResult result = FileUpload.uploadImage(file, request, oldFile);
+                String oldPhoto = user.getBackground();
+                UploadResult result;
+                if (oldPhoto != null && oldPhoto.length() > 0) { // 说明以前有背景,才需要把以前的背景传进去
+                    String oldFile = oldPhoto.substring(user.getBackground().lastIndexOf("upload/"));
+                    result = FileUpload.uploadImage(file, request, oldFile);
+                } else { // 以前没有背景，不需要传以前的地址
+                    result = FileUpload.uploadImage(file, request, null);
+                }
                 map.put("file", result);
                 // 将图片信息保存到数据库
                 user.setBackground(result.getImagePath());
