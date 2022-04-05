@@ -100,4 +100,18 @@ public class FansServiceImpl implements FansService {
         return ref;
     }
 
+    /**
+     * 根据用户URL查看，是否是登录用户的关注
+     * @param loginUserId ：登录用户的ID
+     * @param urlUserId ：被访问用户的ID
+     * @return  是否关注
+     */
+    @Override
+    public boolean urlIsSubscript(Integer loginUserId, Integer urlUserId) {
+        QueryWrapper<Fans> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("attention_user_id", urlUserId).
+                eq("fans_user_id", loginUserId);
+        return fansDao.selectOne(queryWrapper) != null;
+    }
+
 }

@@ -21,4 +21,6 @@ public interface FansService {
     //获取粉丝
     List<User> getFans(FansVo fansVo,String url);
 
+    // 根据用户URL查看，是否是登录用户的关注
+    boolean urlIsSubscript(Integer loginUserId, Integer urlUserId);
 }

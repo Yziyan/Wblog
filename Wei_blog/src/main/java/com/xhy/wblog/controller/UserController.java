@@ -10,6 +10,7 @@ import com.xhy.wblog.controller.vo.users.LoginVo;
 import com.xhy.wblog.entity.Dynamic;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.DynamicService;
+import com.xhy.wblog.service.FansService;
 import com.xhy.wblog.service.UserService;
 import com.xhy.wblog.utils.converter.ReqUrlStr;
 import com.xhy.wblog.utils.exception.ExceptUtil;
@@ -56,7 +57,9 @@ public class UserController {
     // 自动组人dynamicService
     @Autowired
     private DynamicService dynamicService;
-
+    // 自动组人fansService
+    @Autowired
+    private FansService fansService;
     //自动注入邮箱发送类
     @Autowired
     private JavaMailSender javaMailSender;
@@ -267,10 +270,23 @@ public class UserController {
         try {
 
             String basePath = ReqUrlStr.getUrl(request);
+            // 拿到登录用户的id
+            User loginUser = (User) request.getSession().getAttribute("user");
             // 查询此用户的信息、动态
             User user = userService.selectById(id);
-            user.setPhoto(basePath + user.getPhoto());
-            user.setBackground(basePath + user.getBackground());
+            String userPhoto = user.getPhoto();
+            String userBGround = user.getBackground();
+            user.setPhoto(userPhoto != null ? basePath + userPhoto : null);
+            user.setBackground(userBGround != null ? basePath + userBGround : null);
+            // 如果登录了，才设置是否关注
+            if (loginUser != null) {
+                Integer loginUserId = loginUser.getId();
+                // 给用户注入是否关注字段
+                user.setIsSubscript(fansService.urlIsSubscript(loginUserId, id));
+            } else {
+                user.setIsSubscript(false);
+            }
+
             List<Dynamic> dynamics = dynamicService.getByUserId(id, basePath);
 
             // 返回给客户端
