@@ -2,6 +2,7 @@ package com.xhy.wblog.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhy.wblog.controller.result.PublicResult;
+import com.xhy.wblog.controller.vo.users.PasswordVo;
 import com.xhy.wblog.controller.vo.users.RegisterVo;
 import com.xhy.wblog.controller.vo.users.LoginVo;
 import com.xhy.wblog.entity.User;
@@ -26,4 +27,8 @@ public interface UserService {
     User update(User bean);
 
     User selectById(int id);
+
+    // 修改密码
+    @Transactional(readOnly = false)
+    Map<String, Object> updatePsd(PasswordVo bean) throws Exception;
 }

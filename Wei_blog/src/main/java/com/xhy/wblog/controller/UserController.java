@@ -5,6 +5,7 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.code.kaptcha.util.Config;
 import com.xhy.wblog.controller.result.Code;
 import com.xhy.wblog.controller.result.PublicResult;
+import com.xhy.wblog.controller.vo.users.PasswordVo;
 import com.xhy.wblog.controller.vo.users.RegisterVo;
 import com.xhy.wblog.controller.vo.users.LoginVo;
 import com.xhy.wblog.entity.Dynamic;
@@ -340,4 +341,50 @@ public class UserController {
         }
 
     }
+    // 修改密码
+    @RequestMapping("/updatePsd")
+    public PublicResult updatePsd(@RequestBody PasswordVo passwordVo, HttpSession session) {
+
+        try {
+            // 获取登录的user
+            User user = (User) session.getAttribute("user");
+
+            if (user != null) { // 登录过了 ，可以操作
+
+                // 注入登录用户的id
+                passwordVo.setUserId(user.getId());
+                Map<String, Object> map = userService.updatePsd(passwordVo);
+                if ((boolean)map.get("flag")) { // 说明修改成功了
+                    // 清空session中的user
+                    session.removeAttribute("user");
+                    return new PublicResult(true, Code.UPLOAD_OK, map, "修改成功");
+                } else {
+                    return new PublicResult(false, Code.UPLOAD_ERROR, map, "修改失败");
+                }
+            } else {
+                return new PublicResult(false, Code.UPLOAD_ERROR, null, "请登录");
+            }
+
+
+        } catch (Exception e) {
+            return new PublicResult(true, Code.UPLOAD_ERROR, ExceptUtil.getSimpleException(e), "出现了未知的错误");
+        }
+    }
+
+    // 退出登录
+    @RequestMapping("/loginOut")
+    public PublicResult loginOut(HttpSession session) {
+
+        try {
+
+            // 清空session就行
+            session.removeAttribute("user");
+            return new PublicResult(true, 20061, null, "退出成功");
+
+        } catch (Exception e) {
+            return new PublicResult(true, 40060, ExceptUtil.getSimpleException(e), "出现了未知的错误");
+        }
+
+    }
+
 }

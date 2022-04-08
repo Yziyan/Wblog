@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhy.wblog.controller.result.Code;
 import com.xhy.wblog.controller.result.PublicResult;
+import com.xhy.wblog.controller.vo.users.PasswordVo;
 import com.xhy.wblog.controller.vo.users.RegisterVo;
 import com.xhy.wblog.controller.vo.users.LoginVo;
 import com.xhy.wblog.dao.UserDao;
@@ -100,4 +101,44 @@ public class UserServiceImpl implements UserService {
         user.setPassword(null);
         return user;
     }
+
+
+    // 修改密码
+    @Override
+    public Map<String, Object> updatePsd(PasswordVo bean) throws Exception {
+        // 条件查询
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", bean.getUserId());
+        User user = userDao.selectOne(queryWrapper);
+        // 返回的map集合
+        Map<String, Object> map = new HashMap<>();
+
+        if (!Md5.verify(bean.getOldPassword(), Md5.md5key, user.getPassword())) {
+            map.put("msg", "原密码错误");
+            map.put("flag", false);
+        } else { // 说明原密码相同，可以进行密码修改
+
+            // 新密码
+            String newPassword = Md5.md5(bean.getNewPassword(), Md5.md5key);
+
+            if (newPassword.equals(user.getPassword())) { // 说明原密码相同和新密码相同
+                map.put("msg", "新密码和原密码相同");
+                map.put("flag", false);
+            } else {
+                user.setPassword(newPassword);
+                if (userDao.updateById(user) > 0) {
+                    map.put("msg", "修改成功,请重新登录！");
+                    map.put("flag", true);
+                } else {
+                    map.put("msg", "出现了未知的错误");
+                    map.put("flag", false);
+                }
+            }
+
+        }
+
+        return map;
+
+    }
+
 }
