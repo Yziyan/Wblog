@@ -88,7 +88,19 @@ public class DynamicServiceImpl implements DynamicService {
         dynamic.setFile(bean.getFileVo());
         dynamic.setVisible(bean.getVisible());
         dynamic.setUserId(bean.getUserId());
-        dynamic.setForwardDynamicId(bean.getForwardDynamicId());
+        Integer forwardDynamicId = bean.getForwardDynamicId();
+        dynamic.setForwardDynamicId(forwardDynamicId);
+
+
+
+        // 如果是转发，那么转发数那么把转发数 + 1
+        if (forwardDynamicId != null) {
+            Dynamic beForwardDyna = dynamicDao.selectById(bean.getForwardDynamicId());
+            Integer newCount = beForwardDyna.getForwardDynamicCount() + 1;
+            beForwardDyna.setForwardDynamicCount(newCount);
+            dynamicDao.updateById(beForwardDyna);
+        }
+
 
         // 返回的动态结果
         Dynamic resDynamic;

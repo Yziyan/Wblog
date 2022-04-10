@@ -52,7 +52,7 @@ public class DynamicController {
             // 获取登录的user
             User user = (User) request.getSession().getAttribute("user");
 
-            //if (user != null) { // 登录过了 ，可以操作
+            if (user != null) { // 登录过了 ，可以操作
             Map<String, Object> map = new HashMap<>();
             StringBuilder builder = new StringBuilder();
             UploadResult result;
@@ -119,9 +119,9 @@ public class DynamicController {
 
             // 将文件名和文件路径返回，进行响应
             return new PublicResult(true, Code.PUSH_OK, map, msg);
-            //} else {
-            //return new PublicResult(false, Code.PUSH_ERROR, null, "请登录");
-            //}
+            } else {
+            return new PublicResult(false, Code.PUSH_ERROR, null, "请登录");
+            }
 
         } catch (Exception e) {
             return new PublicResult(false, Code.PUSH_ERROR, ExceptUtil.getSimpleException(e), "发布失败");

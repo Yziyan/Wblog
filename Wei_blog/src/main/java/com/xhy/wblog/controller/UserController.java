@@ -175,7 +175,7 @@ public class UserController {
         try {
             String captcha = registerVo.getCaptcha().toLowerCase();
             String code = (String) request.getSession().getAttribute("email");
-            if (!captcha.equals(code)) { // 验证码，错误!captcha.equals(code)
+            if (!captcha.equals(code)) { // 验证码
                 return new PublicResult(false, Code.REGISTER_ERROR, null, "验证码错误");
             } else { // 验证码正确
                 String uri = ReqUrlStr.getUrl(request);
@@ -208,8 +208,7 @@ public class UserController {
 
                 // 将整合好的参数更新到数据库,并且将用户最新的信息返回
                 User resUser = userService.update(bean);
-                // 更新session
-                request.getSession().setAttribute("user", resUser);
+
                 return new PublicResult(true, Code.UPDATE_OK, resUser, "修改成功");
 
             } else {
@@ -308,7 +307,6 @@ public class UserController {
                 // 将信息放入map中
                 Map<String, Object> map = new HashMap<>();
                 String oldPhoto = user.getBackground();
-                String oldPhoto2 = user.getPhoto();
                 UploadResult result;
                 if (oldPhoto != null && oldPhoto.length() > 0) { // 说明以前有背景,才需要把以前的背景传进去
                     String oldFile = oldPhoto.substring(user.getBackground().lastIndexOf("upload/"));
@@ -319,6 +317,7 @@ public class UserController {
                 map.put("file", result);
                 // 将图片信息保存到数据库
                 user.setBackground(result.getImagePath());
+
                 User resUser = userService.update(user);
                 resUser.setPassword(null);
                 resUser.setBackground(result.getFilePath());

@@ -89,6 +89,12 @@ public class Dynamic implements Serializable {
      *  话题
      */
     private String theme;
+    /**
+     *
+     *  转发数量
+     */
+    private Integer forwardDynamicCount;
+
 
     /**
      *  发布动态的用户
@@ -96,6 +102,7 @@ public class Dynamic implements Serializable {
      */
     @TableField(exist = false)
     private User user;
+
 
     //转发的动态
     @TableField(exist = false)
