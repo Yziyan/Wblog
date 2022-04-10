@@ -28,7 +28,7 @@ public class Comment implements Serializable {
     @TableId(type = IdType.AUTO)    //主键自增
     @TableField("id")
     private Integer id;
-    
+
     private Date createdTime;
 
     /**
@@ -50,9 +50,8 @@ public class Comment implements Serializable {
     private Integer dynamicId;
     /**
      * 这条评论是否是回复评论的：
-            不是 ： 0
-            是 ： 那条评论的id
-            
+     * 不是 ： 0
+     * 是 ： 那条评论的id
      */
     private Integer replyId;
 
@@ -61,22 +60,22 @@ public class Comment implements Serializable {
     private ReplyText replyText;
 
     /**
-     *  发表评论的用户
-     *  表示此属性不映射到数据库
+     * 发表评论的用户
+     * 表示此属性不映射到数据库
      */
     @TableField(exist = false)
     private User user;
 
     /**
-     *  楼层Id
+     * 楼层Id
      */
     private Integer floorId;
     /**
-     *  是否可见
+     * 是否可见
      */
     private Integer enable;
     /**
-     *  二级评论的条数
+     * 二级评论的条数
      */
     @TableField(exist = false)
     private Long replyCount;

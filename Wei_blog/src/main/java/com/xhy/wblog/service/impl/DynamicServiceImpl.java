@@ -92,7 +92,6 @@ public class DynamicServiceImpl implements DynamicService {
         dynamic.setForwardDynamicId(forwardDynamicId);
 
 
-
         // 如果是转发，那么转发数那么把转发数 + 1
         if (forwardDynamicId != 0) {
             Dynamic beForwardDyna = dynamicDao.selectById(bean.getForwardDynamicId());
@@ -171,7 +170,7 @@ public class DynamicServiceImpl implements DynamicService {
             if (user != null) {
                 user.setPassword(null);
                 String photo = user.getPhoto();
-                photo =url+photo;
+                photo = url + photo;
                 user.setPhoto(photo);
                 d.setUser(user);
             }
@@ -207,7 +206,7 @@ public class DynamicServiceImpl implements DynamicService {
             if (user != null) {
                 user.setPassword(null);
                 String photo = user.getPhoto();
-                photo =url+photo;
+                photo = url + photo;
                 user.setPhoto(photo);
                 d.setUser(user);
             }
@@ -239,7 +238,7 @@ public class DynamicServiceImpl implements DynamicService {
             if (user != null) {
                 user.setPassword(null);
                 String photo = user.getPhoto();
-                photo =url+photo;
+                photo = url + photo;
                 user.setPhoto(photo);
                 d.setUser(user);
             }

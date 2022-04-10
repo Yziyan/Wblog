@@ -6,6 +6,8 @@
 
     <!-- 一个简单的mapper模板 , 需要编写自取用-->
     <select id="selectPageVo" resultType="com.xhy.wblog.entity.Dynamic">
-        SELECT * FROM t_dynamic limit #{arg1} offset #{arg0}
+        SELECT *
+        FROM t_dynamic limit #{arg1}
+        offset #{arg0}
     </select>
 </mapper>

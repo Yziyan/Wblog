@@ -43,11 +43,11 @@ public interface DynamicService {
 
     //点赞数增减
     @Transactional(readOnly = false)
-    boolean updateDynamicHits(int id,boolean setOrCan);
+    boolean updateDynamicHits(int id, boolean setOrCan);
 
 
     //获取转发嵌套
-    Dynamic getForwardDynamics(Dynamic dynamic,String url);
+    Dynamic getForwardDynamics(Dynamic dynamic, String url);
 
     // 通过用户id查询所有动态
     List<Dynamic> getByUserId(Integer userId, String reqUri);
@@ -55,7 +55,7 @@ public interface DynamicService {
     List<Dynamic> getByUserId(Integer userId);
 
     //获取@我的微博的微博
-    List<Dynamic> getForwardMyDynamic(Integer userId,String url);
+    List<Dynamic> getForwardMyDynamic(Integer userId, String url);
 
     // 通过theme查询
     @Transactional(readOnly = false)

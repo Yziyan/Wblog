@@ -68,7 +68,7 @@ public class UserController {
 
     //邮件发送验证码
     @RequestMapping("/email")
-    public PublicResult sendEmail(@RequestBody RegisterVo registerVo,HttpServletRequest request) {
+    public PublicResult sendEmail(@RequestBody RegisterVo registerVo, HttpServletRequest request) {
         EmaiUtils emaiUtils = new EmaiUtils();
         // 创建Kaptcha对象
         DefaultKaptcha dk = new DefaultKaptcha();
@@ -295,6 +295,7 @@ public class UserController {
             return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "有一个未知的错误！");
         }
     }
+
     // 修改背景
     @RequestMapping("/bagImage")
     public PublicResult updateBackground(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request) {
@@ -336,6 +337,7 @@ public class UserController {
         }
 
     }
+
     // 修改密码
     @RequestMapping("/updatePsd")
     public PublicResult updatePsd(@RequestBody PasswordVo passwordVo, HttpSession session) {
@@ -349,7 +351,7 @@ public class UserController {
                 // 注入登录用户的id
                 passwordVo.setUserId(user.getId());
                 Map<String, Object> map = userService.updatePsd(passwordVo);
-                if ((boolean)map.get("flag")) { // 说明修改成功了
+                if ((boolean) map.get("flag")) { // 说明修改成功了
                     // 清空session中的user
                     session.removeAttribute("user");
                     return new PublicResult(true, Code.UPLOAD_OK, map, "修改成功");

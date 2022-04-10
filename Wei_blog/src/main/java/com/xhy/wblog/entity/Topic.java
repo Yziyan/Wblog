@@ -14,7 +14,6 @@ import java.io.Serializable;
 /**
  * (TTopic)实体类
  *
- *
  * @since 2022-04-03 10:57:51
  */
 @TableName("t_topic")   // 说明实体表名
@@ -41,8 +40,6 @@ public class Topic {
      * 搜索次数
      */
     private Integer queryCount;
-
-
 
 
 }

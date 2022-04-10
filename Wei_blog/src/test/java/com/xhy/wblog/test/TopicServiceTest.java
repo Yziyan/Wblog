@@ -23,9 +23,8 @@ TopicServiceTest {
     private TopicService topicService;
 
 
-
     @Test
-    public void testSave(){
+    public void testSave() {
         String test = "#giao#";
         topicService.save(test);
 

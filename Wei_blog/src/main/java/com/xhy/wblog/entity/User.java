@@ -78,40 +78,40 @@ public class User implements Serializable {
     private String interests;
     /**
      * 用户性别
-            0：男
-            1：女
+     * 0：男
+     * 1：女
      */
     private Integer gender;
     /**
      * 默认是0
-            用户的微博数量
+     * 用户的微博数量
      */
     private Integer dynamicCount;
     /**
      * 默认是0
-            用户的关注数量
+     * 用户的关注数量
      */
     private Integer friendsCount;
     /**
      * 默认是0
-            用户的粉丝数
+     * 用户的粉丝数
      */
     private Integer fansCount;
     /**
      * 用户的唯一网址
-            点击头像或者姓名，可以跳转到个人界面
+     * 点击头像或者姓名，可以跳转到个人界面
      */
     private String profileUrl;
     /**
      * 是否关注我，默认是0
-            0：否
-            1：是
+     * 0：否
+     * 1：是
      */
     private Integer followMe;
     /**
      * 是不是我的关注，默认是0
-            0：否
-            1：是
+     * 0：否
+     * 1：是
      */
     private Integer following;
     /**

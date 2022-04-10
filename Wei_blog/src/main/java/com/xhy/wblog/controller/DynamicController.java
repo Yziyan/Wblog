@@ -54,74 +54,73 @@ public class DynamicController {
             User user = (User) request.getSession().getAttribute("user");
 
             if (user != null) { // 登录过了 ，可以操作
-            Map<String, Object> map = new HashMap<>();
-            StringBuilder builder = new StringBuilder();
-            UploadResult result;
+                Map<String, Object> map = new HashMap<>();
+                StringBuilder builder = new StringBuilder();
+                UploadResult result;
 
-            if (files != null) { // 如果有图片，那么就遍历保存图片
-                for (MultipartFile file : files) {
+                if (files != null) { // 如果有图片，那么就遍历保存图片
+                    for (MultipartFile file : files) {
                         result = FileUpload.uploadImage(file, request, null);
-                    // 将图片地址拼接起来。 并且用 ，隔开放在数据库中
-                    builder.append(result.getImagePath() + ",");
+                        // 将图片地址拼接起来。 并且用 ，隔开放在数据库中
+                        builder.append(result.getImagePath() + ",");
+                    }
+                    builder.replace(builder.length() - 1, builder.length(), "");
                 }
-                builder.replace(builder.length() - 1, builder.length(), "");
-            }
 
 
-
-            // 将图片路径保存到数据库
-            if (id != null && id > 1) { // 说明是编辑操作
-                // 取出原先图片的索引
-                String oldFile = dynamicService.getById(id).getFile();
-                if (oldFile != null && oldFile.length() > 0) {
-                    String[] oldFileArray = oldFile.split(",");
-                    // 拿到前端传过来的索引
-                    Integer[] newFileArray = publishVo.getFileArray();
-                    for (int i = 0; i < oldFileArray.length; i++) {
-                        // 如果被删除了，那么就把
-                        if (newFileArray[i] == 1) {
-                            oldFileArray[i] = "";
-                        }
-                        if (builder != null && builder.length() == 0) {
-                            if (!(oldFileArray[i] != null && oldFileArray[i].length() == 0)) {
-                                builder.append(oldFileArray[i]);
+                // 将图片路径保存到数据库
+                if (id != null && id > 1) { // 说明是编辑操作
+                    // 取出原先图片的索引
+                    String oldFile = dynamicService.getById(id).getFile();
+                    if (oldFile != null && oldFile.length() > 0) {
+                        String[] oldFileArray = oldFile.split(",");
+                        // 拿到前端传过来的索引
+                        Integer[] newFileArray = publishVo.getFileArray();
+                        for (int i = 0; i < oldFileArray.length; i++) {
+                            // 如果被删除了，那么就把
+                            if (newFileArray[i] == 1) {
+                                oldFileArray[i] = "";
                             }
+                            if (builder != null && builder.length() == 0) {
+                                if (!(oldFileArray[i] != null && oldFileArray[i].length() == 0)) {
+                                    builder.append(oldFileArray[i]);
+                                }
 
-                        } else {
-                            if (!(oldFileArray[i] != null && oldFileArray[i].length() == 0)) {
-                                builder.append("," + oldFileArray[i]);
+                            } else {
+                                if (!(oldFileArray[i] != null && oldFileArray[i].length() == 0)) {
+                                    builder.append("," + oldFileArray[i]);
+                                }
                             }
                         }
                     }
+
                 }
 
-            }
 
+                publishVo.setFileVo(String.valueOf(builder));
 
-            publishVo.setFileVo(String.valueOf(builder));
-
-            String appContext = request.getContextPath();
-            String basePath = request.getScheme() + "://"
-                    + request.getServerName() + ":"
-                    + request.getServerPort() + appContext + "/";
-            // 传入数据保存。
-            Dynamic resDynamic = dynamicService.save(publishVo, basePath);
-            if (resDynamic != null) {
-                // 说明保存成功了。返回这条动态信息给前台
-                map.put("dynamic", resDynamic);
-            }
-            String msg = "编辑成功"; // 返回消息
-            if (id == null || id <= 0) {
-                msg = "转发成功";//
-                if (resDynamic.getForwardDynamicId() == 0) {
-                    msg = "动态发布成功";
+                String appContext = request.getContextPath();
+                String basePath = request.getScheme() + "://"
+                        + request.getServerName() + ":"
+                        + request.getServerPort() + appContext + "/";
+                // 传入数据保存。
+                Dynamic resDynamic = dynamicService.save(publishVo, basePath);
+                if (resDynamic != null) {
+                    // 说明保存成功了。返回这条动态信息给前台
+                    map.put("dynamic", resDynamic);
                 }
-            }
+                String msg = "编辑成功"; // 返回消息
+                if (id == null || id <= 0) {
+                    msg = "转发成功";//
+                    if (resDynamic.getForwardDynamicId() == 0) {
+                        msg = "动态发布成功";
+                    }
+                }
 
-            // 将文件名和文件路径返回，进行响应
-            return new PublicResult(true, Code.PUSH_OK, map, msg);
+                // 将文件名和文件路径返回，进行响应
+                return new PublicResult(true, Code.PUSH_OK, map, msg);
             } else {
-            return new PublicResult(false, Code.PUSH_ERROR, null, "请登录");
+                return new PublicResult(false, Code.PUSH_ERROR, null, "请登录");
             }
 
         } catch (Exception e) {
@@ -226,10 +225,10 @@ public class DynamicController {
     }
 
     @RequestMapping("/getForwardMyDynamic")
-    public PublicResult getForwardMyDynamic(Integer userId,HttpServletRequest request){
+    public PublicResult getForwardMyDynamic(Integer userId, HttpServletRequest request) {
         try {
             String basePath = ReqUrlStr.getUrl(request);
-            List<Dynamic> myDynamic = dynamicService.getForwardMyDynamic(userId,basePath);
+            List<Dynamic> myDynamic = dynamicService.getForwardMyDynamic(userId, basePath);
             if (myDynamic != null) {
                 myDynamic.sort((o1, o2) -> o1.getCreatedTime().compareTo(o2.getCreatedTime()));
                 return new PublicResult(true, Code.QUERY_OK, myDynamic, "获取成功！");

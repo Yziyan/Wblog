@@ -29,9 +29,9 @@ public class UserServiceTest {
     private DynamicService dynamicService;
 
     @Test
-    public void test(){
+    public void test() {
 
-        for(int i = 0;i<3;i++){
+        for (int i = 0; i < 3; i++) {
             User user = userDao.getUser(4);
             user.setPhoto("hello");
             System.out.println(user.getPhoto());

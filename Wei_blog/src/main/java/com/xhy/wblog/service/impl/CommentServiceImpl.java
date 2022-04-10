@@ -140,9 +140,9 @@ public class CommentServiceImpl implements CommentService {
 
         QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
 
-            queryWrapper.eq("dynamic_id", listVo.getDynamicId())
-                    .eq("floor_id", listVo.getFloorId())
-                    .eq("enable", 1).orderByDesc("created_time");
+        queryWrapper.eq("dynamic_id", listVo.getDynamicId())
+                .eq("floor_id", listVo.getFloorId())
+                .eq("enable", 1).orderByDesc("created_time");
 
         List<Comment> comments = commentDao.selectList(queryWrapper);
 
@@ -209,7 +209,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /**
-     *
      * @param dynamicId ： 动态的id
      * @return 是否成功
      */

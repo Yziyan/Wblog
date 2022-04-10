@@ -25,7 +25,7 @@ public class CommentServiceTest {
     private DynamicService dynamicService;
 
     @Test
-    public void test(){
+    public void test() {
         service.removeAll(150);
     }
 

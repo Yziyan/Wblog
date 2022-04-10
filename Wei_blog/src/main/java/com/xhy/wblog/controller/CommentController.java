@@ -76,7 +76,7 @@ public class CommentController {
                 Integer dynUserId = userService.selectById(userId).getId();
                 if (commUserId != user.getId() && user.getId() != dynUserId)
                     return new PublicResult(false,
-                        Code.DELETE_ERROR, null, "不是你的评论，你无法删除");
+                            Code.DELETE_ERROR, null, "不是你的评论，你无法删除");
                 if (commentService.removeById(commentId)) {
                     return new PublicResult(true, Code.DELETE_OK, null, "删除成功");
                 } else {

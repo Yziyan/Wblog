@@ -12,14 +12,17 @@ public interface FansService {
 
     //关注
     @Transactional(readOnly = false)
-    boolean addSubscription(int userId,int otherId);
+    boolean addSubscription(int userId, int otherId);
+
     //取消关注
     @Transactional(readOnly = false)
-    boolean cancelSubscription(int userId,int otherId);
+    boolean cancelSubscription(int userId, int otherId);
+
     //获取关注的人
     List<User> getBeSubscript(FansVo fansVo, String url);
+
     //获取粉丝
-    List<User> getFans(FansVo fansVo,String url);
+    List<User> getFans(FansVo fansVo, String url);
 
     // 根据用户URL查看，是否是登录用户的关注
     boolean urlIsSubscript(Integer loginUserId, Integer urlUserId);

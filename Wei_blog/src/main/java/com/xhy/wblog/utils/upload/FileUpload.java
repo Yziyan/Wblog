@@ -2,6 +2,7 @@ package com.xhy.wblog.utils.upload;
 
 import com.xhy.wblog.entity.Constant;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -44,7 +45,7 @@ public class FileUpload {
         // 文件后缀名
         String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
         // 生成新文件名
-        String newFileName =  UUID.randomUUID() + fileSuffix;
+        String newFileName = UUID.randomUUID() + fileSuffix;
 
         //存储到数据库的文件路径
         String image = Constant.BASE_DIR + Constant.IMG_DIR + newFileName;

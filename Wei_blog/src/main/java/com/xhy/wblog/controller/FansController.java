@@ -63,7 +63,7 @@ public class FansController {
     public PublicResult getBeSubscript(@RequestBody FansVo fansVo, HttpServletRequest request) {
         try {
             String basePath = ReqUrlStr.getUrl(request);
-            List<User> beSubscript = fansService.getBeSubscript(fansVo,basePath);
+            List<User> beSubscript = fansService.getBeSubscript(fansVo, basePath);
             return new PublicResult(true, Code.QUERY_OK, beSubscript, "获取成功！");
         } catch (Exception e) {
             return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "网络出现波动！请重新尝试");
@@ -75,7 +75,7 @@ public class FansController {
     public PublicResult getFans(@RequestBody FansVo fansVo, HttpServletRequest request) {
         try {
             String basePath = ReqUrlStr.getUrl(request);
-            List<User> beSubscript = fansService.getFans(fansVo,basePath);
+            List<User> beSubscript = fansService.getFans(fansVo, basePath);
             return new PublicResult(true, Code.QUERY_OK, beSubscript, "获取成功！");
         } catch (Exception e) {
             return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "网络出现波动！请重新尝试");

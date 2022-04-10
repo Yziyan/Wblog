@@ -12,6 +12,7 @@ public class DateConverter implements Converter<String, Date> {
 
     // 可以有，多种形式的日期。
     private List<String> patterns;
+
     // 用来注入属性
     public void setPatterns(List<String> patterns) {
         this.patterns = patterns;

@@ -8,7 +8,9 @@
 
     <!-- 清空一级缓存的sql -->
     <select id="getUser" flushCache="true" parameterType="int" resultType="User">
-        SELECT * FROM t_user WHERE id = #{userId}
+        SELECT *
+        FROM t_user
+        WHERE id = #{userId}
     </select>
 
 </mapper>

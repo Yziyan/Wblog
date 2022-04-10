@@ -11,7 +11,6 @@ import java.util.Properties;
 public class EmaiUtils {
 
 
-
     public String sendMail(String text, String subject, String location, String emailAdress,
                            JavaMailSender javaMailSender, Boolean type) {
         MimeMessage mMessage = javaMailSender.createMimeMessage();// 创建邮件对象

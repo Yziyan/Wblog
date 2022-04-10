@@ -55,9 +55,9 @@ public class Dynamic implements Serializable {
     private List<String> filePath;
     /**
      * 默认是0
-            0 ： 公开
-            10：粉丝
-            20：仅自己
+     * 0 ： 公开
+     * 10：粉丝
+     * 20：仅自己
      */
     private Integer visible;
     /**
@@ -70,8 +70,8 @@ public class Dynamic implements Serializable {
     private Integer commentsCount;
     /**
      * 默认是0：
-            不是转发的：0
-            是转发的 ： 转发的动态的 id
+     * 不是转发的：0
+     * 是转发的 ： 转发的动态的 id
      */
     private Integer forwardDynamicId;
 
@@ -80,25 +80,22 @@ public class Dynamic implements Serializable {
      */
     private Integer userId;
     /**
-     *
-     *  是否可见
+     * 是否可见
      */
     private Integer enable;
     /**
-     *
-     *  话题
+     * 话题
      */
     private String theme;
     /**
-     *
-     *  转发数量
+     * 转发数量
      */
     private Integer forwardDynamicCount;
 
 
     /**
-     *  发布动态的用户
-     *  表示此属性不映射到数据库
+     * 发布动态的用户
+     * 表示此属性不映射到数据库
      */
     @TableField(exist = false)
     private User user;

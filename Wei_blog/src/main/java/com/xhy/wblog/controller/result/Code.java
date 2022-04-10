@@ -1,7 +1,7 @@
 package com.xhy.wblog.controller.result;
 
 
- // 状态码
+// 状态码
 
 public class Code {
 
@@ -25,11 +25,9 @@ public class Code {
     public static final Integer QUERY_OVER = 400100;
     public static final Integer LOGIN_ERROR = 40050;
     public static final Integer REGISTER_ERROR = 40060;
-    public static final Integer CAPTCHA_ERROR= 40070; // 验证码
-    public static final Integer UPLOAD_ERROR= 40070; // 验证码
-    public static final Integer PUSH_ERROR= 40080; // 动态发布、发表评论
-
-
+    public static final Integer CAPTCHA_ERROR = 40070; // 验证码
+    public static final Integer UPLOAD_ERROR = 40070; // 验证码
+    public static final Integer PUSH_ERROR = 40080; // 动态发布、发表评论
 
 
 }
