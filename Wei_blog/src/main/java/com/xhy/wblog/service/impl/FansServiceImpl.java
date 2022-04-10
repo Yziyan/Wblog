@@ -69,7 +69,15 @@ public class FansServiceImpl implements FansService {
             User user = userDao.selectById(f.getAttentionUserId());
             wrapper1.clear();
             wrapper1.eq("fans_user_id",fansVo.getLookId()).eq("attention_user_id",f.getAttentionUserId());
-            user.setIsSubscript(fansDao.selectOne(wrapper1) != null);
+            if(user.getId().equals(fansVo.getLookId())){
+                user.setIsSubscript(null);
+            }else {
+                if(fansDao.selectOne(wrapper1) != null){
+                    user.setIsSubscript(true);
+                }else {
+                    user.setIsSubscript(false);
+                }
+            }
             user.setPassword(null);
             String photo = user.getPhoto();
             photo =url+photo;
@@ -89,8 +97,15 @@ public class FansServiceImpl implements FansService {
             User user = userDao.getUser(f.getFansUserId());
             wrapper1.clear();
             wrapper1.eq("fans_user_id",fansVo.getLookId()).eq("attention_user_id",f.getFansUserId());
-            Fans chakande = fansDao.selectOne(wrapper1);
-            user.setIsSubscript(chakande != null);
+            if(user.getId().equals(fansVo.getLookId())){
+                user.setIsSubscript(null);
+            }else {
+                if(fansDao.selectOne(wrapper1) != null){
+                    user.setIsSubscript(true);
+                }else {
+                    user.setIsSubscript(false);
+                }
+            }
             user.setPassword(null);
             String photo = user.getPhoto();
             photo =url+photo;

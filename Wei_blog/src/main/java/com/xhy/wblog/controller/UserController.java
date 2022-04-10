@@ -68,13 +68,12 @@ public class UserController {
 
     //邮件发送验证码
     @RequestMapping("/email")
-    public PublicResult sendEmail(@RequestBody RegisterVo registerVo) {
+    public PublicResult sendEmail(@RequestBody RegisterVo registerVo,HttpServletRequest request) {
         EmaiUtils emaiUtils = new EmaiUtils();
         // 创建Kaptcha对象
         DefaultKaptcha dk = new DefaultKaptcha();
         // 验证码配置
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("kaptcha.properties")) {
-
             Properties properties = new Properties();
             properties.load(is);
             Config config = new Config(properties);
@@ -85,15 +84,16 @@ public class UserController {
 
         // 验证码字符串
         String code = dk.createText();
+        // 将其字符串保存到session中
+        HttpSession session = request.getSession();
+        session.setAttribute("email", code.toLowerCase());
 
         if ("发送成功".equals(emaiUtils.sendMail("欢迎注册！验证码为:" + code, "验证码", null, registerVo.getEmail(),
                 javaMailSender, false))) {
-            return new PublicResult(true, Code.SAVE_OK, code, "邮箱已发送，请接收！");
+            return new PublicResult(true, Code.SAVE_OK, null, "邮箱已发送，请接收！");
         } else {
             return new PublicResult(true, Code.SAVE_ERROR, null, "邮箱发送失败！请检查邮箱是否正确并重新发送");
         }
-        //        return emaiUtils.sendMail("，欢迎注册！验证码为:", "验证码", null,
-        //                "2218094687@qq.com", javaMailSender, false);
     }
 
     // 验证码
@@ -174,16 +174,15 @@ public class UserController {
     public PublicResult register(@RequestBody RegisterVo registerVo, HttpServletRequest request) {
         try {
             String captcha = registerVo.getCaptcha().toLowerCase();
-            String code = (String) request.getSession().getAttribute("code");
-            if (!captcha.equals(code)) { // 验证码，错误
+            String code = (String) request.getSession().getAttribute("email");
+            if (!captcha.equals(code)) { // 验证码，错误!captcha.equals(code)
                 return new PublicResult(false, Code.REGISTER_ERROR, null, "验证码错误");
             } else { // 验证码正确
-                String uri = request.getRequestURI();
+                String uri = ReqUrlStr.getUrl(request);
                 // http://localhost:8080/wblog/users   将这个传入service
-                String userUrl = uri.substring(0, uri.lastIndexOf("/")) + "/u";
+                String userUrl = uri.substring(0, uri.lastIndexOf("/")) + "/users/u";
                 registerVo.setProfileUrl(userUrl);
-                // Map<String, Object> map = userService.register(registerVo);
-                Map<String, Object> map = new HashMap<>();
+                Map<String, Object> map = userService.register(registerVo);
                 if ((boolean) map.get("flag")) {
                     return new PublicResult(true, Code.REGISTER_OK, null, (String) map.get("msg"));
                 }
@@ -250,8 +249,6 @@ public class UserController {
                 resUser.setPhoto(result.getFilePath());
                 map.put("user", resUser);
 
-                // 更新session
-                request.getSession().setAttribute("user", resUser);
                 // 将文件名和文件路径返回，进行响应
                 return new PublicResult(true, Code.UPLOAD_OK, map, "图片上传成功");
 
@@ -299,7 +296,7 @@ public class UserController {
             return new PublicResult(false, Code.QUERY_ERROR, ExceptUtil.getSimpleException(e), "有一个未知的错误！");
         }
     }
-    // 修改头像
+    // 修改背景
     @RequestMapping("/bagImage")
     public PublicResult updateBackground(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request) {
 
@@ -311,6 +308,7 @@ public class UserController {
                 // 将信息放入map中
                 Map<String, Object> map = new HashMap<>();
                 String oldPhoto = user.getBackground();
+                String oldPhoto2 = user.getPhoto();
                 UploadResult result;
                 if (oldPhoto != null && oldPhoto.length() > 0) { // 说明以前有背景,才需要把以前的背景传进去
                     String oldFile = oldPhoto.substring(user.getBackground().lastIndexOf("upload/"));
@@ -326,8 +324,6 @@ public class UserController {
                 resUser.setBackground(result.getFilePath());
                 map.put("user", resUser);
 
-                // 更新session
-                request.getSession().setAttribute("user", resUser);
                 // 将文件名和文件路径返回，进行响应
                 return new PublicResult(true, Code.UPLOAD_OK, map, "图片上传成功");
 
