@@ -75,6 +75,7 @@ public class UserServiceImpl implements UserService {
             userDao.insert(user);
             // 插入之后返回的id拼接到传过来的uri，保存到user的网址上
             user.setProfileUrl(registerVo.getProfileUrl() + user.getId());
+            user.setName("user"+user.getId());
             userDao.updateById(user);
             map.put("msg", "注册成功!");
             map.put("flag", true);

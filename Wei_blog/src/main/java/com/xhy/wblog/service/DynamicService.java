@@ -30,7 +30,7 @@ public interface DynamicService {
     //分页查询，获取动态
 //    Page<Dynamic> getNewDynamic(int countnum, int nums);
 //
-    List<Dynamic> findAllPage(Integer pageNum, Integer pageSize);
+    List<Dynamic> getMidleDynamic(String url);
 
     //获取数据总数
     long getCount();

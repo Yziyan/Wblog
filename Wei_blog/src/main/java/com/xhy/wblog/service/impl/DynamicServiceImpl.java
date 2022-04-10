@@ -161,12 +161,23 @@ public class DynamicServiceImpl implements DynamicService {
 
     //分页查询
     @Override
-    public List<Dynamic> findAllPage(Integer pageNum, Integer pageSize) {
-
-        PageHelper.startPage(pageNum, pageSize);
+    public List<Dynamic> getMidleDynamic(String url) {
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
-        queryWrapper.orderByDesc("created_time");
-        return dynamicDao.selectList(queryWrapper);
+        queryWrapper.orderByDesc("hits").eq("enable", 1);
+        List<Dynamic> dynamics = dynamicDao.selectList(queryWrapper);
+        for (Dynamic d : dynamics) {
+            d.setFilePath(getFilePath(d, url));
+            User user = userDao.getUser(d.getUserId());
+            if (user != null) {
+                user.setPassword(null);
+                String photo = user.getPhoto();
+                photo =url+photo;
+                user.setPhoto(photo);
+                d.setUser(user);
+            }
+            getForwardDynamics(d, url);
+        }
+        return dynamics;
     }
 
     @Override
@@ -285,8 +296,10 @@ public class DynamicServiceImpl implements DynamicService {
         Dynamic dynamic = dynamicDao.selectById(id);
         if (setOrCan) {
             dynamic.setHits(dynamic.getHits() + 1);
-        } else if (dynamic.getHits() > 0) {
-            dynamic.setHits(dynamic.getHits() - 1);
+        } else {
+            if (dynamic.getHits() > 0) {
+                dynamic.setHits(dynamic.getHits() - 1);
+            }
         }
         return dynamicDao.updateById(dynamic) > 0;
     }

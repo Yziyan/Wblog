@@ -146,30 +146,12 @@ public class DynamicController {
         }
     }
 
-    @RequestMapping("/getOldDynamic")
-    public PublicResult getOldDynamic(Integer reqCount) {
+    @RequestMapping("/getMidleDynamic")
+    public PublicResult getMidleDynamic(HttpServletRequest request) {
         try {
-            //获得动态
-            // 每页条数
-            Integer pageSize = 2;
-            // 偏移量
-            Integer pageNum = 2 * (reqCount - 1);
-            List<Dynamic> newDynamic = dynamicService.findAllPage(pageNum, pageSize);
+            String url = ReqUrlStr.getUrl(request);
+            List<Dynamic> newDynamic = dynamicService.getMidleDynamic(url);
             if (newDynamic != null) {//动态不为空，去取得user
-                for (Dynamic dynamic : newDynamic) {
-                    User user = userService.selectById(dynamic.getUserId());
-                    user.setPassword(null);
-                    dynamic.setUser(user);
-                }
-                // 动态的总条数
-                long totalCount = dynamicService.getCount();
-
-                // 总页数
-                long totalPages = (totalCount + pageSize - 1) / pageSize;
-                if (reqCount > totalPages)// 如果请求的页数大于总页数，则告诉没有更多微博了！
-                {
-                    return new PublicResult(false, Code.QUERY_OVER, null, "没有动态了喔~请休息一下吧~");
-                }
                 return new PublicResult(true, Code.QUERY_OK, newDynamic, "获取成功!");
             }
             return new PublicResult(false, Code.QUERY_ERROR, null, "获取失败！");
