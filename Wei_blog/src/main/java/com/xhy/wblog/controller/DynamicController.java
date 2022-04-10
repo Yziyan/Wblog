@@ -10,6 +10,7 @@ import com.xhy.wblog.entity.Topic;
 import com.xhy.wblog.entity.User;
 import com.xhy.wblog.service.CommentService;
 import com.xhy.wblog.service.DynamicService;
+import com.xhy.wblog.service.TopicService;
 import com.xhy.wblog.service.UserService;
 import com.xhy.wblog.utils.converter.ReqUrlStr;
 import com.xhy.wblog.utils.exception.ExceptUtil;
@@ -264,6 +265,7 @@ public class DynamicController {
         try {
 
             List<Dynamic> topicDynamic = dynamicService.listByTheme(topic, ReqUrlStr.getUrl(request));
+
             if (topicDynamic.size() > 0) {
                 return new PublicResult(true, Code.QUERY_OK, topicDynamic, "获取成功！");
             } else {

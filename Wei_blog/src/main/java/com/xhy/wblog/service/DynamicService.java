@@ -58,5 +58,6 @@ public interface DynamicService {
     List<Dynamic> getForwardMyDynamic(Integer userId,String url);
 
     // 通过theme查询
+    @Transactional(readOnly = false)
     List<Dynamic> listByTheme(String theme, String reqUrl);
 }

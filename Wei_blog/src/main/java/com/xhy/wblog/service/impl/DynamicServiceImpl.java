@@ -94,7 +94,7 @@ public class DynamicServiceImpl implements DynamicService {
 
 
         // 如果是转发，那么转发数那么把转发数 + 1
-        if (forwardDynamicId != null) {
+        if (forwardDynamicId != 0) {
             Dynamic beForwardDyna = dynamicDao.selectById(bean.getForwardDynamicId());
             Integer newCount = beForwardDyna.getForwardDynamicCount() + 1;
             beForwardDyna.setForwardDynamicCount(newCount);
@@ -320,6 +320,9 @@ public class DynamicServiceImpl implements DynamicService {
      */
     @Override
     public List<Dynamic> listByTheme(String theme, String reqUrl) {
+
+        topicService.getByTheme(theme);
+
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
         // 模糊查询，并且按点赞数降序返回
         queryWrapper.like("theme", theme).

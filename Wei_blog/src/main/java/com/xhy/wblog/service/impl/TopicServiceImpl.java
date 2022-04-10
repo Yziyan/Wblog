@@ -50,7 +50,14 @@ public class TopicServiceImpl implements TopicService {
     public Topic getByTheme(String theme) {
         QueryWrapper<Topic> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("theme", theme);
-        return topicDao.selectOne(queryWrapper);
+        Topic topic = topicDao.selectOne(queryWrapper);
+
+        if (topic != null) {
+            topic.setQueryCount(topic.getQueryCount() + 1);
+            topicDao.updateById(topic);
+        }
+
+        return topic;
     }
 
 

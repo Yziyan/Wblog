@@ -16,5 +16,6 @@ public interface TopicService {
     boolean save(String topicStr);
 
     // 通过主题搜索话题
+    @Transactional(readOnly = false)
     Topic getByTheme(String theme);
 }
