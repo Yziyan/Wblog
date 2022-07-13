@@ -1,8 +1,11 @@
 package com.xhy.wblog.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xhy.wblog.controller.result.PublicResult;
-import com.xhy.wblog.controller.vo.RegisterVo;
-import com.xhy.wblog.controller.vo.LoginVo;
+import com.xhy.wblog.controller.vo.users.PasswordVo;
+import com.xhy.wblog.controller.vo.users.RegisterVo;
+import com.xhy.wblog.controller.vo.users.LoginVo;
+import com.xhy.wblog.entity.User;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
@@ -14,9 +17,18 @@ public interface UserService {
 
     //用email来查找 ，@Transactional(readOnly = false)：保存东西最好写上
     @Transactional(readOnly = false)
-    public PublicResult register(RegisterVo registerVo);
+    Map<String, Object> register(RegisterVo registerVo) throws Exception;
 
     // 用户登录
     Map<String, Object> login(LoginVo bean) throws Exception;
 
+    // 修改个人信息
+    @Transactional(readOnly = false)
+    User update(User bean);
+
+    User selectById(int id);
+
+    // 修改密码
+    @Transactional(readOnly = false)
+    Map<String, Object> updatePsd(PasswordVo bean) throws Exception;
 }

@@ -11,9 +11,10 @@ public class Md5 {
 
     /**
      * 用来加密
-     * @param text  明文 222
-     * @param key   密钥 xhy
-     * @return      密文
+     *
+     * @param text 明文 222
+     * @param key  密钥 xhy
+     * @return 密文
      * @throws Exception
      */
     public static String md5(String text, String key) throws Exception {
@@ -24,10 +25,11 @@ public class Md5 {
 
     /**
      * 用来验证
-     * @param text  明文
-     * @param key   密钥
-     * @param key   密文
-     * @return    true/false
+     *
+     * @param text 明文
+     * @param key  密钥
+     * @param key  密文
+     * @return true/false
      * @throws Exception
      */
     public static boolean verify(String text, String key, String md5) throws Exception {

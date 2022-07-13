@@ -2,15 +2,12 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.xhy.wblog.dao.UserDao">
+<mapper namespace="com.xhy.wblog.dao.DynamicDao">
 
     <!-- 一个简单的mapper模板 , 需要编写自取用-->
-
-    <!-- 清空一级缓存的sql -->
-    <select id="getUser" flushCache="true" parameterType="int" resultType="User">
+    <select id="selectPageVo" resultType="com.xhy.wblog.entity.Dynamic">
         SELECT *
-        FROM t_user
-        WHERE id = #{userId}
+        FROM t_dynamic limit #{arg1}
+        offset #{arg0}
     </select>
-
 </mapper>
